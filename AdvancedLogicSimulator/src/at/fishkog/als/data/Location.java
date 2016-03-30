@@ -44,6 +44,18 @@ public class Location extends Data {
 		return this.y.getValue();
 	}
 
+	public boolean isInside(int x, int y, int width, int height) {
+		if(width < 0) {
+			width *= -1;
+			x -= width;
+		}
+		if(height < 0) {
+			height *= -1;
+			y -= height;
+		}
+		return (this.x.value >= x && this.x.value <= (x + width)) && (this.y.value >= y && this.y.value <= (y + height));
+	}
+	
 	@Override
 	public HashMap<String, MetaValue<?>> getMetaValues() {
 		HashMap<String, MetaValue<?>> result = new HashMap<String, MetaValue<?>>();

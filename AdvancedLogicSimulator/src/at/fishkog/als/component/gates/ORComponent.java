@@ -12,9 +12,11 @@ public class ORComponent extends Component implements Processable {
 	public ORComponent(int x, int y, int width, int height) {
 		super(0, Categories.LOGIC, "OR", x, y, width, height);
 		
-		this.connectors.add(new Connector("in1", Type.INPUT));
-		this.connectors.add(new Connector("in2", Type.INPUT));
-		this.connectors.add(new Connector("out1", Type.OUTPUT));
+		this.addConnector(new Connector("in1", Type.INPUT, 0, 0));
+		this.addConnector(new Connector("in2", Type.INPUT, 0, 0));
+		this.addConnector(new Connector("out1", Type.OUTPUT, 0, 0));
+		
+		this.recalculateConnectorPosition();
 	}
 
 	@Override

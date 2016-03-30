@@ -18,9 +18,11 @@ public class ANDComponent extends Component implements Processable {
 		this.bounds.width.setValue((int) renderContext.getImage().getWidth());
 		this.bounds.height.setValue((int) renderContext.getImage().getHeight());
 		
-		this.connectors.add(new Connector("in1", Type.INPUT));
-		this.connectors.add(new Connector("in2", Type.INPUT));
-		this.connectors.add(new Connector("out1", Type.OUTPUT));
+		for(int i = 0; i < 31; i++) this.addConnector(new Connector("in" + i, Type.INPUT, 0, 0));
+		
+		this.addConnector(new Connector("out1", Type.OUTPUT, 0, 0));
+		
+		this.recalculateConnectorPosition();
 	}
 
 	@Override

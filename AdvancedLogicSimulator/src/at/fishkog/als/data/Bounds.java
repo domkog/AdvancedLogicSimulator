@@ -38,7 +38,20 @@ public class Bounds extends Data{
 	//Fix this not working
 	public boolean isVisible(int x, int y, int offsetX, int offsetY, int screenWidth, int screenHeight) {
 		return true;
-		//return ((x + width.value) > offsetX && x < (offsetX + screenWidth)) || ((y + height.value) > offsetY && y < (offsetY + screenHeight)); 
+		//return isInside(x, y, offsetX, offsetY, screenWidth, screenHeight);
+	}
+	
+	public boolean isInside(int x, int y, int rectX, int rectY, int width, int height) {
+		Location[] corners = new Location[]{
+			new Location(x, y),
+			new Location(x + this.getIntWidth(), y),
+			new Location(x, y + this.getIntHeight()),
+			new Location(x + this.getIntWidth(), y + this.getIntHeight())
+		};
+		for(Location loc: corners) {
+			if(loc.isInside(rectX, rectY, width, height)) return true;
+		}
+		return false;
 	}
 	
 	@Override

@@ -13,7 +13,7 @@ public class BasicAttributes extends Data{
 	 * id: int
 	 * category: int 
 	 * name: String 
-	 * orientation: int 0 North, 1 East, 2 South, 3 West
+	 * orientation: int 0 EAST, 1 SOUTH, 2 WEST, 3 NORTH
 	 * desc: String Description displayed near the object
 	 * desc-pos: int position of the Description relative to the object (same as orientation)
 	 */

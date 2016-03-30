@@ -31,7 +31,7 @@ import javafx.stage.Stage;
 public class AdvancedLogicSimulator extends Application {
 	
 	public static final String TITLE = "AdvancedLogicSimulator";
-	public static final String VERSION = "InDev-1.0.0";
+	public static final String VERSION = "InDev-1.1.0";
 	public static final int COPYRIGHT_YEAR = 2016;
 
 	public static AdvancedLogicSimulator instance;
@@ -61,6 +61,8 @@ public class AdvancedLogicSimulator extends Application {
 		this.registerCategories();
 		logicCanvas = new LogicCanvas();
 		logicCanvas.add(new ANDComponent(400, 400));
+		logicCanvas.add(new ANDComponent(500, 400));
+		logicCanvas.add(new ANDComponent(600, 400));
 		
 		//Initialize UIManager and show default scene
 		uiManager = new UIManager();

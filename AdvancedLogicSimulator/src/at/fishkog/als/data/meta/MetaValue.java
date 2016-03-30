@@ -20,14 +20,32 @@ public class MetaValue<T> {
 		}
 	}
 	
+	public enum MetaAccess {
+		READ_WRITE, READ;
+	}
+	
 	private ArrayList<MetaValueListener<T>> listeners;
 	
 	public MetaType type;
 	public T value;
 	
+	public MetaAccess access;
+	
 	public MetaValue(T value) {
 		listeners = new ArrayList<>();
 		this.value = value;
+		this.access = MetaAccess.READ_WRITE;
+		try {
+			this.type = MetaType.getMetaType(value);
+		} catch (MetaDataTypeException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public MetaValue(T value, MetaAccess access) {
+		listeners = new ArrayList<>();
+		this.value = value;
+		this.access = access;
 		try {
 			this.type = MetaType.getMetaType(value);
 		} catch (MetaDataTypeException e) {
