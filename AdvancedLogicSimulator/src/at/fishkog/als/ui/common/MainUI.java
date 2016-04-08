@@ -12,7 +12,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToolBar;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -42,7 +44,25 @@ public class MainUI extends UI {
         Menu menuEdit = new Menu("Edit");
         Menu menuView = new Menu("View");
  
-        menuBar.getMenus().addAll(menuFile, menuEdit, menuView);
+      //Help Menu
+        Menu menuHelp = new Menu("Help");
+        MenuItem menuItemOptions = new MenuItem("Options");
+        
+        menuItemOptions.setOnAction((e) -> {
+        	new DialogOptions().show();
+        	
+        });
+        
+        MenuItem menuItemConsole = new MenuItem("Console");
+        menuItemConsole.setAccelerator(KeyCombination.keyCombination("CTRL+SHIFT+C"));
+        menuItemConsole.setOnAction((event) -> {
+        	//Open Dev-Console
+        	
+        });
+        
+        menuHelp.getItems().addAll(menuItemOptions,menuItemConsole);
+        
+        menuBar.getMenus().addAll(menuFile, menuEdit, menuView, menuHelp);
         root.getChildren().add(menuBar);
         
         ToolBar header = new ToolBar(
