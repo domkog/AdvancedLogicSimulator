@@ -139,7 +139,6 @@ public abstract class Component extends Data {
 		int offsetHeight = (extansionHeight - this.bounds.getIntHeight()) / 2;
 		if(this.basicAttributes.getIntOrientation() == 0) {
 			double spaceInput = extansionHeight / (inputs.size() + 1);
-			System.out.println(extansionHeight + " - " + spaceInput);
 			for(int i = 0; i < inputs.size(); i++) {
 				Connector c = inputs.get(i);
 				c.location.x.setValue(this.location.getIntX() - c.bounds.getIntWidth());

@@ -3,7 +3,7 @@ package at.fishkog.als.data;
 import javafx.scene.paint.Color;
 
 public class WireStatus {
-	//TODO In Config?
+	//TODO Get real color codes from config
 	public static final Color TRUE_COLOR = Color.GREEN;
 	public static final Color FALSE_COLOR = Color.GRAY;
 	public static final Color NULL_COLOR = Color.BLUE;
