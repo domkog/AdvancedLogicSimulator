@@ -1,4 +1,4 @@
-package at.fishkog.als.ui.common;
+package at.fishkog.als.ui.common.dialogs;
 
 import java.awt.Desktop;
 import java.util.Arrays;
@@ -9,7 +9,6 @@ import at.fishkog.als.AdvancedLogicSimulator;
 import at.fishkog.als.config.PropertiesManager;
 import at.fishkog.als.lang.LanguageManager;
 import at.fishkog.als.log.ALSLogger;
-import at.fishkog.als.ui.themes.DialogThemesManager;
 import at.fishkog.als.utils.FileUtils;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

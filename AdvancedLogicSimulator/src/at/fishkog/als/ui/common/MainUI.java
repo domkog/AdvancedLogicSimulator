@@ -4,6 +4,7 @@ package at.fishkog.als.ui.common;
 import at.fishkog.als.AdvancedLogicSimulator;
 import at.fishkog.als.lang.LanguageManager;
 import at.fishkog.als.ui.UI;
+import at.fishkog.als.ui.common.dialogs.DialogOptions;
 import at.fishkog.als.ui.common.renderer.ComponentRenderer;
 import at.fishkog.als.ui.common.sidebar.Sidebar;
 import javafx.beans.value.ChangeListener;
@@ -14,6 +15,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
@@ -56,9 +59,6 @@ public class MainUI extends UI {
         menuItemOptions.setId("MainMenuBarSub");
         menuItemOptions.setOnAction((e) -> {
         	new DialogOptions().show();
-        	
-           
-        	
         });
         
         MenuItem menuItemConsole = new MenuItem(l.getString("Console"));
@@ -66,7 +66,6 @@ public class MainUI extends UI {
         menuItemConsole.setId("MainMenuBarSub");
         menuItemConsole.setOnAction((event) -> {
         	AdvancedLogicSimulator.cons.show();
-        	
         });
         
         menuHelp.getItems().addAll(menuItemOptions,menuItemConsole);
@@ -95,14 +94,25 @@ public class MainUI extends UI {
 		AdvancedLogicSimulator.renderer.repaint();
 		
 		hWrapper.getChildren().add(sidePanel);
+		TabPane tabPane = new TabPane();
+		Tab main = new Tab();
+		main.setText("Main");
+		
 		Pane canvasPane = new Pane(canvasBackground, canvasObjects);
 		canvasPane.setId("Comp-Grid");
-		hWrapper.getChildren().add(canvasPane);
+		
+		main.setContent(canvasPane);
+		tabPane.getTabs().add(main);
+		hWrapper.getChildren().add(tabPane);
+		//hWrapper.getChildren().add(canvasPane);
 		hWrapper.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
 				canvasBackground.setWidth(arg2.doubleValue());
 				canvasObjects.setWidth(arg2.doubleValue());
+				canvasPane.setPrefWidth(arg2.doubleValue());
+				tabPane.setTabMaxWidth(arg2.doubleValue());
+				tabPane.setPrefHeight(arg2.doubleValue());
 				AdvancedLogicSimulator.renderer.repaint();
 			}
 		});
@@ -112,6 +122,9 @@ public class MainUI extends UI {
 			public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
 				canvasBackground.setHeight(arg2.doubleValue());
 				canvasObjects.setHeight(arg2.doubleValue());
+				canvasPane.setPrefHeight(arg2.doubleValue());
+				tabPane.setTabMaxHeight(arg2.doubleValue());
+				tabPane.setPrefHeight(arg2.doubleValue());
 				AdvancedLogicSimulator.renderer.repaint();
 			}
 		});

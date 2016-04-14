@@ -1,4 +1,4 @@
-package at.fishkog.als.ui.themes;
+package at.fishkog.als.ui.common.dialogs;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -76,7 +76,7 @@ public class DialogThemesManager {
         sp1.getChildren().add(table);
         
         
-        //StackPane rigth
+        //StackPane right
         GridPane grid = new GridPane();
 	    grid.setAlignment(Pos.CENTER_LEFT);
 	    grid.setHgap(10);

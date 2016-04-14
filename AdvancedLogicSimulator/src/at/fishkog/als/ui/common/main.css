@@ -6,17 +6,16 @@
 
 #MainMenuBarSub {
 	-fx-font-weight: normal;
-	
 }
 
 
 .root{
     -fx-font-size: 12pt;
     -fx-base: white;
-    -fx-background: black;
+    /*-fx-background: black;*/
 }
 
 #Comp-Grid {
-	-fx-background-color: white;
+	/*-fx-background-color: white;*/
 	
 }

@@ -91,7 +91,5 @@ public class BasicAttributes extends Data{
 		result.put("descPos", this.descPos);
 		return result;
 	}
-	
-	
-	
+
 }

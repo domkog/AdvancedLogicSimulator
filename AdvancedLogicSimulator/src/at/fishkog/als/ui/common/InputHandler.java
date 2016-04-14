@@ -80,7 +80,7 @@ public class InputHandler {
 				canvas.setCursor(Cursor.DEFAULT);
 				AdvancedLogicSimulator.renderer.repaint();
 			}
-			if(hoveredConnector != null && !resultConnector) {
+			if(hoveredConnector != null) {
 				hoveredConnector = null;
 				canvas.setCursor(Cursor.DEFAULT);
 				AdvancedLogicSimulator.renderer.repaint();
@@ -110,7 +110,7 @@ public class InputHandler {
 			}
 			mouseX = event.getX();
 			mouseY = event.getY();
-			if(selected.isEmpty()) {
+			if(selected.isEmpty() && hoveredConnector == null) {
 				selected.clear();
 				selector = true;
 				selectorX = translateX(mouseX);
@@ -150,7 +150,7 @@ public class InputHandler {
 					AdvancedLogicSimulator.renderer.repaint();
 					return;
 				}
-				if(!draggingConnector) {
+				if(!selector && !draggingConnector) {
 					for(Component c: AdvancedLogicSimulator.logicCanvas.components) {
 						for(Connector con: c.connectors) {
 							if(con.intersects((int)translateX(mouseX), (int)translateY(mouseY))) {
@@ -162,7 +162,7 @@ public class InputHandler {
 						}
 					}
 				}
-				if(draggingConnector) {
+				if(!selector && draggingConnector) {
 					draggedConnector.onDragged((int) (draggedConnector.location.getIntX() + movedX), (int) (draggedConnector.location.getIntY() + movedY));
 					Platform.runLater(() -> AdvancedLogicSimulator.mainUi.mousePos.setText((hoveredComponent != null ? hoveredComponent.basicAttributes.getStringName() + " | " : "") + l.getString("Mouse") +":  X: " + translateX(mouseX) + " Y: " + translateY(mouseY)));
 					AdvancedLogicSimulator.renderer.repaint();

@@ -47,11 +47,18 @@ public class ComponentRenderer {
 			}
 			
 			for(Connector con: c.connectors) {
-				gc2.strokeOval(con.location.getIntX() + mainUI.inputHandler.offsetX, con.location.getIntY() + mainUI.inputHandler.offsetY, con.bounds.getIntWidth(), con.bounds.getIntHeight());
-				if(mainUI.inputHandler.hoveredConnector == con) {
-					gc2.setFill(selected);
-					gc2.fillOval(con.location.getIntX() + mainUI.inputHandler.offsetX, con.location.getIntY() + mainUI.inputHandler.offsetY, con.bounds.getIntWidth(), con.bounds.getIntHeight());
-				}
+				if (con.isNegated) {
+					gc2.strokeOval(con.location.getIntX() + mainUI.inputHandler.offsetX, con.location.getIntY() + mainUI.inputHandler.offsetY, con.bounds.getIntWidth(), con.bounds.getIntHeight());
+					if(mainUI.inputHandler.hoveredConnector == con) {
+						gc2.setFill(selected);
+						gc2.fillOval(con.location.getIntX() + mainUI.inputHandler.offsetX, con.location.getIntY() + mainUI.inputHandler.offsetY, con.bounds.getIntWidth(), con.bounds.getIntHeight());
+					}
+				} else {
+					gc2.strokeLine(con.location.getIntX() + mainUI.inputHandler.offsetX + (c.isConnectorVertical() ? 0 : 2.5), con.location.getIntY() + mainUI.inputHandler.offsetY + (c.isConnectorVertical() ? 3 : 0), con.location.getIntX() + mainUI.inputHandler.offsetX + (c.isConnectorVertical() ? 6 : 2.5), con.location.getIntY() + mainUI.inputHandler.offsetY + (c.isConnectorVertical() ? 3 : 6)) ;
+					if(mainUI.inputHandler.hoveredConnector == con) {
+						gc2.strokeOval(con.location.getIntX() + mainUI.inputHandler.offsetX, con.location.getIntY() + mainUI.inputHandler.offsetY, con.bounds.getIntWidth(), con.bounds.getIntHeight());
+					}
+				}				
 			}
 			
 			int extansion = c.getExtansionSize();
@@ -60,7 +67,7 @@ public class ComponentRenderer {
 				gc2.strokeLine(loc[0].getIntX() + mainUI.inputHandler.offsetX, loc[0].getIntY() + mainUI.inputHandler.offsetY,
 						loc[1].getIntX() + mainUI.inputHandler.offsetX, loc[1].getIntY() + mainUI.inputHandler.offsetY);
 			}
-			
+
 			if((mainUI.inputHandler.selected != null && mainUI.inputHandler.selected.contains(c)) || 
 					mainUI.inputHandler.dragged != null && mainUI.inputHandler.dragged == c) {
 				gc2.setFill(selected);

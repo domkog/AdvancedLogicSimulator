@@ -18,6 +18,9 @@ public class ConfigDefault {
 		propsDefault.setProperty("LANG", "en");
 		propsDefault.setProperty("CNTRY", "GB");
 		
+		//Comp Options
+		propsDefault.setProperty("maxBit", "64");
+		
 		//DevOptions
 		 /*
 		 *ALL
@@ -40,6 +43,6 @@ public class ConfigDefault {
 		
 		propsLogDefault.setProperty("LOGPACKAGEINCONSOLE", "TRUE");
 		propsLogDefault.setProperty("LOGPACKAGEINLOGFILE", "TRUE");
-		
+
 	}	
 }

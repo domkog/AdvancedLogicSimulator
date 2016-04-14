@@ -63,6 +63,5 @@ public class Location extends Data {
 		result.put("y", y);
 		return result;
 		
-	}
-	
+	}	
 }

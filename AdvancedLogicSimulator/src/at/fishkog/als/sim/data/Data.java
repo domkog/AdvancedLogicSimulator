@@ -8,4 +8,10 @@ public abstract class Data {
 
 	public abstract HashMap<String, MetaValue<?>> getMetaValues();
 	
+	public enum State {
+		TRUE, FALSE, NULL, UNKOWN, ERROR, INVISIBLE;
+	}
+	
+	public BitWidth bitwidth;
+	
 }

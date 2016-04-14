@@ -1,4 +1,4 @@
-package at.fishkog.als.ui.common;
+package at.fishkog.als.ui.common.dialogs;
 
 import at.fishkog.als.AdvancedLogicSimulator;
 import at.fishkog.als.lang.LanguageManager;
