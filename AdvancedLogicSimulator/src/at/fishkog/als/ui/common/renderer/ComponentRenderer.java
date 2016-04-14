@@ -1,9 +1,9 @@
 package at.fishkog.als.ui.common.renderer;
 
 import at.fishkog.als.AdvancedLogicSimulator;
-import at.fishkog.als.component.Component;
-import at.fishkog.als.data.Connector;
-import at.fishkog.als.data.Location;
+import at.fishkog.als.sim.component.Component;
+import at.fishkog.als.sim.data.Connector;
+import at.fishkog.als.sim.data.Location;
 import at.fishkog.als.ui.common.MainUI;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -48,6 +48,10 @@ public class ComponentRenderer {
 			
 			for(Connector con: c.connectors) {
 				gc2.strokeOval(con.location.getIntX() + mainUI.inputHandler.offsetX, con.location.getIntY() + mainUI.inputHandler.offsetY, con.bounds.getIntWidth(), con.bounds.getIntHeight());
+				if(mainUI.inputHandler.hoveredConnector == con) {
+					gc2.setFill(selected);
+					gc2.fillOval(con.location.getIntX() + mainUI.inputHandler.offsetX, con.location.getIntY() + mainUI.inputHandler.offsetY, con.bounds.getIntWidth(), con.bounds.getIntHeight());
+				}
 			}
 			
 			int extansion = c.getExtansionSize();
@@ -73,8 +77,8 @@ public class ComponentRenderer {
 			}
 		}
 		if(mainUI.inputHandler.selector) {
-			gc2.setFill(selected);
-			gc2.setStroke(selected.darker());
+			gc2.setFill(selected.brighter());
+			gc2.setStroke(selected.darker().darker());
 			int drawX = (int) mainUI.inputHandler.selectorX, drawY = (int) mainUI.inputHandler.selectorY, drawWidth = (int) mainUI.inputHandler.selectorWidth, drawHeight = (int) mainUI.inputHandler.selectorHeight;
 			gc2.fillRect(drawX + mainUI.inputHandler.offsetX, drawY + mainUI.inputHandler.offsetY, drawWidth, drawHeight);
 			gc2.strokeRect(drawX + mainUI.inputHandler.offsetX, drawY + mainUI.inputHandler.offsetY, drawWidth, drawHeight);

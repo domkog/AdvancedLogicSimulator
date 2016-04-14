@@ -1,0 +1,22 @@
+#mainMenuBar {
+	-fx-font-size: 14px;
+	-fx-font-weight: bold;
+	
+}
+
+#MainMenuBarSub {
+	-fx-font-weight: normal;
+	
+}
+
+
+.root{
+    -fx-font-size: 12pt;
+    -fx-base: white;
+    -fx-background: black;
+}
+
+#Comp-Grid {
+	-fx-background-color: white;
+	
+}

@@ -5,11 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Properties;
+
 import at.fishkog.als.log.ALSLogger;
 
 public class PropertiesManager {
@@ -18,6 +20,8 @@ public class PropertiesManager {
 	
 	private File dir;
 	private File configFile;
+	
+	private boolean xml;
 	
 	private final static String BASICNAME = "ADVANCED LOGIC SIMULATOR - CONFIG: ";
 	private String title;
@@ -33,6 +37,7 @@ public class PropertiesManager {
 	public PropertiesManager(File configFile,Boolean xml,Properties defaultProperties, String name){
 		this.title = BASICNAME  + name;
 		this.defaultProps = defaultProperties;
+		this.xml = xml;
 		
 		if(!configFile.isDirectory()) {
 			this.dir = configFile.getParentFile();
@@ -83,36 +88,13 @@ public class PropertiesManager {
 	
 	}
 	
-	/**
-	 * Returns the value for the key key
-	 * If it doesn´t exist, returns the default value instead
-	 * Tries to cast to clazz
-	 * 
-	 * @param clazz the class-typ of the result
-	 * @param key key for the Entry in the properties
-	 * @return value of the Entry with the key 'key' with the typ 'clazz'
-	 */
-	@SuppressWarnings("unchecked")
-	public <T> T get(Class<T> clazz, String key) {		
-		String value = this.get(key);
-		
-		try {
-			return (T) value;
-			
-		} catch(Exception e) {
-			ALSLogger.logger.warning("Failed casting to" + clazz.toString() + " from String: " + value);
-		}
-		return null;
-		
-	}	
-	
 	/** Returns value for key as String 
 	 * @param key key for the Entry in the properties
 	 * @return  value (as String) of the Entry with the key 'key'
 	 * */
 	public String get(String key){
-		return this.props.getProperty(key);
-
+		return this.props.getProperty(key.toUpperCase());
+		
 	}
 	
 	/** Sets the value for the Entry with the given key
@@ -121,7 +103,7 @@ public class PropertiesManager {
 	 * 
 	 */
 	public void set(String key, Object value) {
-			this.props.setProperty(key, value.toString());
+			this.props.setProperty(key.toUpperCase(), value.toString());
 			
 	}
 	
@@ -164,14 +146,16 @@ public class PropertiesManager {
 
 	private void writeConfig(File configFile, Properties props, String title) {	
 		try {			
-			//FileWriter writer = new FileWriter(configFile);
-			OutputStream outputStream = new FileOutputStream(configFile);
+			if(this.xml) {
+				OutputStream outputStream = new FileOutputStream(configFile);
+				props.storeToXML(outputStream, title);
+				outputStream.close();
 			
-			//tprops.store(writer, "ADVANCED LOGIC SIMULATOR - SETTINGS");
-			props.storeToXML(outputStream, title);
-			
-			//writer.close();
-			outputStream.close();
+			} else {
+				FileWriter writer = new FileWriter(configFile);
+				props.store(writer, title);
+				writer.close();
+			}
 			
 		} catch (FileNotFoundException e) {	
 			ALSLogger.logger.warning("ConfigFile couldn´t be found found!");
@@ -184,5 +168,11 @@ public class PropertiesManager {
 	
 	public void terminate() {
 		writeConfig(this.configFile,this.props,this.title);
+	}
+	
+	public void reset() {
+		this.props = this.defaultProps;
+		writeConfig(this.configFile,this.defaultProps,this.title);
+		
 	}
 }

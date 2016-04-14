@@ -3,7 +3,9 @@ package at.fishkog.als.ui.common;
 import java.util.ArrayList;
 
 import at.fishkog.als.AdvancedLogicSimulator;
-import at.fishkog.als.component.Component;
+import at.fishkog.als.lang.LanguageManager;
+import at.fishkog.als.sim.component.Component;
+import at.fishkog.als.sim.data.Connector;
 import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
@@ -25,6 +27,9 @@ public class InputHandler {
 	public boolean componentHovered = false;
 	public Component hoveredComponent;
 	public Component dragged;
+	public Connector hoveredConnector;
+	public Connector draggedConnector;
+	public boolean draggingConnector = false;
 	public boolean dragging = false;
 	private boolean clickFlag = false;
 	public ArrayList<Component> selected = new ArrayList<Component>();
@@ -36,13 +41,18 @@ public class InputHandler {
 	
 	public ContextMenu context;
 	
+	private LanguageManager l;
+	
 	public InputHandler(Canvas canvas) {
 		this.canvas = canvas;
+		
+		this.l = AdvancedLogicSimulator.lang;
 		
 		this.canvas.setOnMouseMoved((event) -> {
 			vMouseX = translateX(event.getX());
 			vMouseY = translateY(event.getY());
 			boolean result = false;
+			boolean resultConnector = false;
 			for(Component c: AdvancedLogicSimulator.logicCanvas.components) {
 				if(c.intersects((int)vMouseX, (int)vMouseY)) {
 					componentHovered = true;
@@ -52,6 +62,17 @@ public class InputHandler {
 					AdvancedLogicSimulator.renderer.repaint();
 					break;
 				}
+				if(!resultConnector) {
+					for(Connector con: c.connectors) {
+						if(con.intersects((int)vMouseX, (int)vMouseY)) {
+							hoveredConnector = con;
+							resultConnector = true;
+							canvas.setCursor(Cursor.HAND);
+							AdvancedLogicSimulator.renderer.repaint();
+							break;
+						}
+					}
+				}
 			}
 			if(componentHovered && !result) {
 				componentHovered = false;
@@ -59,7 +80,12 @@ public class InputHandler {
 				canvas.setCursor(Cursor.DEFAULT);
 				AdvancedLogicSimulator.renderer.repaint();
 			}
-			Platform.runLater(() -> AdvancedLogicSimulator.mainUi.mousePos.setText((hoveredComponent != null ? hoveredComponent.basicAttributes.getStringName() + " | " : "") + "Mouse: X: " + vMouseX + " Y: " + vMouseY));
+			if(hoveredConnector != null && !resultConnector) {
+				hoveredConnector = null;
+				canvas.setCursor(Cursor.DEFAULT);
+				AdvancedLogicSimulator.renderer.repaint();
+			}
+			Platform.runLater(() -> AdvancedLogicSimulator.mainUi.mousePos.setText((hoveredComponent != null ? hoveredComponent.basicAttributes.getStringName() + " | " : "") + l.getString("Mouse") +": X: " + vMouseX + " Y: " + vMouseY));
 			
 		});
 		
@@ -120,7 +146,29 @@ public class InputHandler {
 							c.location.y.setValue((int) (c.location.getIntY() + movedY));
 						}
 					}
-				} else if(selector) {
+					Platform.runLater(() -> AdvancedLogicSimulator.mainUi.mousePos.setText((hoveredComponent != null ? hoveredComponent.basicAttributes.getStringName() + " | " : "") + l.getString("Mouse") +": X: " + translateX(mouseX) + " Y: " + translateY(mouseY)));
+					AdvancedLogicSimulator.renderer.repaint();
+					return;
+				}
+				if(!draggingConnector) {
+					for(Component c: AdvancedLogicSimulator.logicCanvas.components) {
+						for(Connector con: c.connectors) {
+							if(con.intersects((int)translateX(mouseX), (int)translateY(mouseY))) {
+								draggedConnector = con;
+								draggedConnector.onDraggedStarted();
+								draggingConnector = true;
+								break;
+							}
+						}
+					}
+				}
+				if(draggingConnector) {
+					draggedConnector.onDragged((int) (draggedConnector.location.getIntX() + movedX), (int) (draggedConnector.location.getIntY() + movedY));
+					Platform.runLater(() -> AdvancedLogicSimulator.mainUi.mousePos.setText((hoveredComponent != null ? hoveredComponent.basicAttributes.getStringName() + " | " : "") + l.getString("Mouse") +":  X: " + translateX(mouseX) + " Y: " + translateY(mouseY)));
+					AdvancedLogicSimulator.renderer.repaint();
+					return;
+				}
+				if(selector) {
 					selectorWidth = translateX(mouseX) - selectorRefX;
 					selectorHeight = translateY(mouseY) - selectorRefY;
 					if(selectorWidth < 0) {
@@ -142,7 +190,7 @@ public class InputHandler {
 					AdvancedLogicSimulator.renderer.repaint();
 				}
 			}
-			Platform.runLater(() -> AdvancedLogicSimulator.mainUi.mousePos.setText((hoveredComponent != null ? hoveredComponent.basicAttributes.getStringName() + " | " : "") + "Mouse: X: " + translateX(mouseX) + " Y: " + translateY(mouseY)));
+			Platform.runLater(() -> AdvancedLogicSimulator.mainUi.mousePos.setText((hoveredComponent != null ? hoveredComponent.basicAttributes.getStringName() + " | " : "") + l.getString("Mouse") +":  X: " + translateX(mouseX) + " Y: " + translateY(mouseY)));
 			AdvancedLogicSimulator.renderer.repaint();
 		});
 		
@@ -157,13 +205,13 @@ public class InputHandler {
 				for(Component c: AdvancedLogicSimulator.logicCanvas.components) {
 					if(c.intersects(x, y)) {
 						ContextMenu context = new ContextMenu();
-						MenuItem select = new MenuItem((selected.contains(c)) ? "Select" : "Deselect");
+						MenuItem select = new MenuItem((selected.contains(c)) ? l.getString("Select") : l.getString("Deselect"));
 						select.setOnAction((e) -> {
 							if(this.selected.contains(c)) this.selected.remove(c);
 							else this.selected.add(c);
 							AdvancedLogicSimulator.renderer.repaint();
 						});
-						MenuItem delete = new MenuItem("Delete");
+						MenuItem delete = new MenuItem(l.getString("Delete"));
 						delete.setOnAction((e) -> {
 							for(Component comp: selected) {
 								AdvancedLogicSimulator.logicCanvas.remove(comp);
@@ -171,14 +219,14 @@ public class InputHandler {
 							selected.clear();
 							AdvancedLogicSimulator.renderer.repaint();
 						});
-						MenuItem rotate = new MenuItem("Rotate");
+						MenuItem rotate = new MenuItem(l.getString("Rotate"));
 						rotate.setOnAction((e) -> {
 							for(Component comp: selected) {
 								comp.onRotate();
 							}
 							AdvancedLogicSimulator.renderer.repaint();
 						});
-						MenuItem properties = new MenuItem("Properties");
+						MenuItem properties = new MenuItem(l.getString("Properties"));
 						context.getItems().addAll(select, delete, rotate, properties);
 						context.show(canvas, event.getScreenX(),event.getScreenY());
 						
@@ -224,6 +272,13 @@ public class InputHandler {
 				if(dragging) {
 					canvas.setCursor(Cursor.HAND);
 					dragging = false;
+					clickFlag = true;
+				}
+				if(draggingConnector) {
+					canvas.setCursor(Cursor.HAND);
+					draggedConnector.onDraggedFinish((int) translateX(event.getX()),(int) translateY(event.getY()));
+					draggedConnector = null;
+					draggingConnector = false;
 					clickFlag = true;
 				}
 				if(selector) {

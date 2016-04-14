@@ -2,6 +2,7 @@ package at.fishkog.als.ui.common;
 
 
 import at.fishkog.als.AdvancedLogicSimulator;
+import at.fishkog.als.lang.LanguageManager;
 import at.fishkog.als.ui.UI;
 import at.fishkog.als.ui.common.renderer.ComponentRenderer;
 import at.fishkog.als.ui.common.sidebar.Sidebar;
@@ -32,6 +33,8 @@ public class MainUI extends UI {
 	public ToolBar footer;
 	public Text mousePos;
 	
+	private LanguageManager l;
+	
 	@Override
 	public String getID() {
 		return "main";
@@ -39,24 +42,30 @@ public class MainUI extends UI {
 
 	@Override
 	public void show() {
+		this.l = AdvancedLogicSimulator.lang;
+		
 		MenuBar menuBar = new MenuBar();
-        Menu menuFile = new Menu("File");
-        Menu menuEdit = new Menu("Edit");
-        Menu menuView = new Menu("View");
+		menuBar.setId("mainMenuBar");
+        Menu menuFile = new Menu(l.getString("File"));
+        Menu menuEdit = new Menu(l.getString("Edit"));
+        Menu menuView = new Menu(l.getString("View"));
  
       //Help Menu
-        Menu menuHelp = new Menu("Help");
-        MenuItem menuItemOptions = new MenuItem("Options");
-        
+        Menu menuHelp = new Menu(l.getString("Help"));
+        MenuItem menuItemOptions = new MenuItem(l.getString("Options"));  
+        menuItemOptions.setId("MainMenuBarSub");
         menuItemOptions.setOnAction((e) -> {
         	new DialogOptions().show();
         	
+           
+        	
         });
         
-        MenuItem menuItemConsole = new MenuItem("Console");
+        MenuItem menuItemConsole = new MenuItem(l.getString("Console"));
         menuItemConsole.setAccelerator(KeyCombination.keyCombination("CTRL+SHIFT+C"));
+        menuItemConsole.setId("MainMenuBarSub");
         menuItemConsole.setOnAction((event) -> {
-        	//Open Dev-Console
+        	AdvancedLogicSimulator.cons.show();
         	
         });
         
@@ -66,9 +75,9 @@ public class MainUI extends UI {
         root.getChildren().add(menuBar);
         
         ToolBar header = new ToolBar(
-        		new Button("New project"),
-        		new Button("Delete"), 
-        		new Button("Undo"));
+        		new Button(l.getString("NewProject")),
+        		new Button(l.getString("Delete")), 
+        		new Button(l.getString("Undo")));
         root.getChildren().add(header);
         
 		HBox hWrapper = new HBox(1);
@@ -86,7 +95,9 @@ public class MainUI extends UI {
 		AdvancedLogicSimulator.renderer.repaint();
 		
 		hWrapper.getChildren().add(sidePanel);
-		hWrapper.getChildren().add(new Pane(canvasBackground, canvasObjects));
+		Pane canvasPane = new Pane(canvasBackground, canvasObjects);
+		canvasPane.setId("Comp-Grid");
+		hWrapper.getChildren().add(canvasPane);
 		hWrapper.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
@@ -104,13 +115,14 @@ public class MainUI extends UI {
 				AdvancedLogicSimulator.renderer.repaint();
 			}
 		});
+		
 		root.getChildren().add(hWrapper);
 		
 		footer = new ToolBar();
 		HBox space = new HBox();
 		HBox.setHgrow(space, Priority.ALWAYS);
 		footer.getItems().add(space);
-		footer.getItems().add(mousePos = new Text("Mouse: X: - Y: - "));
+		footer.getItems().add(mousePos = new Text(l.getString("Mouse") + " : X: - Y: - "));
 		root.getChildren().add(footer);
 	}
 
@@ -140,5 +152,7 @@ public class MainUI extends UI {
 	public Scene getScene() {
 		return scene;
 	}
+	
 
+	
 }

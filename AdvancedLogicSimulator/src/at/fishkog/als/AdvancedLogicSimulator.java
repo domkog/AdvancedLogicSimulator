@@ -19,18 +19,22 @@
 package at.fishkog.als;
 
 import java.io.File;
-import at.fishkog.als.component.categories.Categories;
-import at.fishkog.als.component.categories.CategoryManager;
-import at.fishkog.als.component.gates.ANDComponent;
-import at.fishkog.als.component.gates.ORComponent;
+
 import at.fishkog.als.config.ConfigDefault;
 import at.fishkog.als.config.PropertiesManager;
 import at.fishkog.als.lang.LanguageManager;
 import at.fishkog.als.log.ALSLogger;
+import at.fishkog.als.sim.component.categories.Categories;
+import at.fishkog.als.sim.component.categories.CategoryManager;
+import at.fishkog.als.sim.component.gates.ANDComponent;
+import at.fishkog.als.sim.component.gates.ORComponent;
 import at.fishkog.als.ui.UIManager;
+import at.fishkog.als.ui.common.DialogConsole;
 import at.fishkog.als.ui.common.MainUI;
 import at.fishkog.als.ui.common.renderer.ComponentRenderer;
+import at.fishkog.als.utils.ConsoleOutputCapturer;
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class AdvancedLogicSimulator extends Application {
@@ -51,11 +55,19 @@ public class AdvancedLogicSimulator extends Application {
 	
 	public static LogicCanvas logicCanvas;
 	
+	
+	public static final File pathAppdata = new File(System.getenv("APPDATA") + "\\AdvancedLogicSimulator");
 	public static final File mainConfigFile = new File(System.getenv("APPDATA") + "\\AdvancedLogicSimulator\\config.xml");
 	public static final File logConfigFile = new File(System.getenv("APPDATA") + "\\AdvancedLogicSimulator\\logConfig.xml");
 	
 	public static PropertiesManager config;
 	public static PropertiesManager logConfig;
+	
+	public static LanguageManager lang;
+	
+	public static ConsoleOutputCapturer cocOut;
+	
+	public static DialogConsole cons;
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -63,24 +75,26 @@ public class AdvancedLogicSimulator extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		//Configs
 		ConfigDefault.init();
 		config = new PropertiesManager(mainConfigFile, true, ConfigDefault.propsDefault, "Main Options");
 		logConfig = new PropertiesManager(logConfigFile, true, ConfigDefault.propsLogDefault, "Logging Options");
 		
+		//Logger		
 		ALSLogger.init();
 		
-		//TODO make this work
-		if (logConfig.get(Boolean.class, "LogAsTXT")) {
-			ALSLogger.logger.info("geht");
+		//Language
+		lang = new LanguageManager();
 		
-		}
+		cons = new DialogConsole();
 		
-		LanguageManager lang = new LanguageManager();
-		lang.getAllLangs();
+		//Custom Console
+		cocOut = ConsoleOutputCapturer.create(System.out);
+		System.setOut(cocOut);
 		
 		instance = this;
 		stage = primaryStage;
-		
+
 		ALSLogger.logger.info("Setting up JavaFx frame...");
 		
 		primaryStage.setTitle(TITLE + "-" + VERSION + "-" + COPYRIGHT_YEAR);
@@ -97,17 +111,21 @@ public class AdvancedLogicSimulator extends Application {
 		this.registerUIs();
 		uiManager.show("main");
 		
+		primaryStage.getIcons().add(new Image(AdvancedLogicSimulator.class.getClassLoader()
+				.getResource("resources/icons/iconMain.png").toExternalForm()));
 		primaryStage.show();
 		
 		primaryStage.setOnCloseRequest((event) -> {
 			this.exit();
 			
 		});
+		
 	}
 	
 	public void exit() {
 		config.terminate();
 		logConfig.terminate();
+		cons.hide();
 		
 	}
 	

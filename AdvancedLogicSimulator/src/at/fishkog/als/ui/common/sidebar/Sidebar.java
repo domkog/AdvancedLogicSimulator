@@ -4,9 +4,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import at.fishkog.als.AdvancedLogicSimulator;
-import at.fishkog.als.component.Component;
-import at.fishkog.als.component.categories.CategoryManager;
-import at.fishkog.als.component.categories.ComponentCategory;
+import at.fishkog.als.lang.LanguageManager;
+import at.fishkog.als.sim.component.Component;
+import at.fishkog.als.sim.component.categories.CategoryManager;
+import at.fishkog.als.sim.component.categories.ComponentCategory;
 import javafx.geometry.Insets;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.ScrollPane;
@@ -21,6 +22,8 @@ public class Sidebar extends VBox {
 	public LinkedHashMap<String, TitledPane> panes;
 	public HashMap<String, SidebarTreeView<Component>> content;
 	
+	private LanguageManager l = AdvancedLogicSimulator.lang;
+	
     public Sidebar() {
         super();
         
@@ -32,7 +35,7 @@ public class Sidebar extends VBox {
         setMinHeight(600);
 
         TextField tfSearch = new TextField();
-        tfSearch.setPromptText("Search...");
+        tfSearch.setPromptText(l.getString("Search") + "...");
         this.getChildren().add(tfSearch);
         VBox.setMargin(tfSearch, new Insets(10, 20, 10, 20));
 

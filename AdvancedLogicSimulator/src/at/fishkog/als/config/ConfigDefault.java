@@ -15,7 +15,8 @@ public class ConfigDefault {
 		propsDefault.setProperty("UNKNOWN_COLOR", "Color.BLUE");
 		
 		//Language Options
-		propsDefault.setProperty("LANG", "en_GB");
+		propsDefault.setProperty("LANG", "en");
+		propsDefault.setProperty("CNTRY", "GB");
 		
 		//DevOptions
 		 /*
@@ -29,16 +30,16 @@ public class ConfigDefault {
 		 * Loggs everything Higher than the choosen
 		 */
 		
-		propsLogDefault.setProperty("MainFilter", "ALL");
-		propsLogDefault.setProperty("LogFileFilter", "WARNING");
-		propsLogDefault.setProperty("ConsoleFilter", "ALL");
+		propsLogDefault.setProperty("MAINFILTER", "ALL");
+		propsLogDefault.setProperty("LOGFILEFILTER", "WARNING");
+		propsLogDefault.setProperty("CONSOLEFILTER", "ALL");
 		
-		propsLogDefault.setProperty("LogInConsole", "TRUE");
-		propsLogDefault.setProperty("LogAsHTML", "TRUE");
-		propsLogDefault.setProperty("LogAsTXT", "TRUE");
+		propsLogDefault.setProperty("LOGINCONSOLE", "TRUE");
+		propsLogDefault.setProperty("LOGASHTML", "TRUE");
+		propsLogDefault.setProperty("LOGASTXT", "TRUE");
 		
-		propsLogDefault.setProperty("LogPackageInConsole", "TRUE");
-		propsLogDefault.setProperty("LogPackageInLogFile", "TRUE");
+		propsLogDefault.setProperty("LOGPACKAGEINCONSOLE", "TRUE");
+		propsLogDefault.setProperty("LOGPACKAGEINLOGFILE", "TRUE");
 		
 	}	
 }

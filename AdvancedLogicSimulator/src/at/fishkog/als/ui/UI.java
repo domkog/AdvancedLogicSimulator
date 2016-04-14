@@ -5,7 +5,7 @@ package at.fishkog.als.ui;
 
 import javafx.scene.Scene;
 
-public abstract class UI {
+public abstract class UI{
 
 	public abstract String getID();
 	

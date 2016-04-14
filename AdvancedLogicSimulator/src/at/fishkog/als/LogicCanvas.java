@@ -2,7 +2,7 @@ package at.fishkog.als;
 
 import java.util.ArrayList;
 
-import at.fishkog.als.component.Component;
+import at.fishkog.als.sim.component.Component;
 
 public class LogicCanvas {
 
