@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 import at.fishkog.als.AdvancedLogicSimulator;
 import at.fishkog.als.config.PropertiesManager;
 
-public class ALSLogger {
-	private static final String path = System.getenv("APPDATA") + "\\AdvancedLogicSimulator\\Logs";
+public class ALSLogger {	
+	private static final String path = AdvancedLogicSimulator.pathAppdata + "\\Logs";
 	private static File dir = new File(path);
 
 	private static FileHandler txtHandler;
@@ -136,8 +136,8 @@ public class ALSLogger {
 			}
 		
 		} catch (IOException e) {
-		      e.printStackTrace();
-		      throw new RuntimeException("Problems with creating the log files");
+			ALSLogger.logger.warning("Problems with creating the log files");
+			
 	    }
 
 	}

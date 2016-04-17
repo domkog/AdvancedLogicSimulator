@@ -1,11 +1,11 @@
 package at.fishkog.als.ui.common;
 
-
 import at.fishkog.als.AdvancedLogicSimulator;
 import at.fishkog.als.lang.LanguageManager;
 import at.fishkog.als.ui.UI;
 import at.fishkog.als.ui.common.dialogs.DialogOptions;
-import at.fishkog.als.ui.common.renderer.ComponentRenderer;
+import at.fishkog.als.ui.common.renderer.PannableCanvas;
+import at.fishkog.als.ui.common.renderer.TempComponentRenderer;
 import at.fishkog.als.ui.common.sidebar.Sidebar;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -19,6 +19,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -85,47 +87,59 @@ public class MainUI extends UI {
 		VBox whiteboard = new VBox();
 		whiteboard.setPrefHeight(900);
 		whiteboard.setPrefWidth(1300);
-		
-		canvasBackground = new Canvas(1300, 900);
-		canvasObjects = new Canvas(1300, 900);
-		inputHandler = new InputHandler(canvasObjects);
-		
-		AdvancedLogicSimulator.renderer = new ComponentRenderer(this, canvasBackground, canvasObjects);
-		AdvancedLogicSimulator.renderer.repaint();
+				
+		// create canvas
+		PannableCanvas CanvasComponents = new PannableCanvas(1300, 600);
+        Canvas canvasGrid = new Canvas(1300,600);
+        
+        MouseInputHandler sceneGestures = new MouseInputHandler(CanvasComponents);
+        scene.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
+        scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
+        scene.addEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
 		
 		hWrapper.getChildren().add(sidePanel);
 		TabPane tabPane = new TabPane();
 		Tab main = new Tab();
 		main.setText("Main");
 		
-		Pane canvasPane = new Pane(canvasBackground, canvasObjects);
+		Pane canvasPane = new Pane(CanvasComponents, canvasGrid);
 		canvasPane.setId("Comp-Grid");
 		
-		main.setContent(canvasPane);
+		tabPane.prefHeightProperty().addListener((arg0, from, to) -> {
+        	canvasGrid.setHeight(to.doubleValue());
+        	AdvancedLogicSimulator.renderer.repaint();
+        });
+		
+		tabPane.prefWidthProperty().addListener((arg0, from, to) -> {
+        	canvasGrid.setWidth(to.doubleValue());
+        	AdvancedLogicSimulator.renderer.repaint();
+        	
+        });
+			
+		main.setContent(canvasPane);        
+       
+		AdvancedLogicSimulator.renderer = new TempComponentRenderer(this, canvasGrid, CanvasComponents); 
+		AdvancedLogicSimulator.renderer.repaint();
+		
 		tabPane.getTabs().add(main);
 		hWrapper.getChildren().add(tabPane);
-		//hWrapper.getChildren().add(canvasPane);
+		hWrapper.getChildren().add(canvasPane);		
 		hWrapper.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
-				canvasBackground.setWidth(arg2.doubleValue());
-				canvasObjects.setWidth(arg2.doubleValue());
 				canvasPane.setPrefWidth(arg2.doubleValue());
 				tabPane.setTabMaxWidth(arg2.doubleValue());
-				tabPane.setPrefHeight(arg2.doubleValue());
-				AdvancedLogicSimulator.renderer.repaint();
+				tabPane.setPrefWidth(arg2.doubleValue());
 			}
 		});
 		
 		hWrapper.heightProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
-				canvasBackground.setHeight(arg2.doubleValue());
-				canvasObjects.setHeight(arg2.doubleValue());
 				canvasPane.setPrefHeight(arg2.doubleValue());
 				tabPane.setTabMaxHeight(arg2.doubleValue());
 				tabPane.setPrefHeight(arg2.doubleValue());
-				AdvancedLogicSimulator.renderer.repaint();
+
 			}
 		});
 		
@@ -154,6 +168,7 @@ public class MainUI extends UI {
 		String css = MainUI.class.getResource("main.css").toExternalForm();
 		scene.getStylesheets().clear();
 		scene.getStylesheets().add(css);
+
 	}
 
 	@Override
@@ -164,8 +179,5 @@ public class MainUI extends UI {
 	@Override
 	public Scene getScene() {
 		return scene;
-	}
-	
-
-	
+	}	
 }

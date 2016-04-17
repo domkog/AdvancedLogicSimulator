@@ -21,17 +21,20 @@ public class MetaValue<T> {
 	}
 	
 	public enum MetaAccess {
-		READ_WRITE, READ;
+		READ_WRITE, READ, HIDDEN;
 	}
 	
 	private ArrayList<MetaValueListener<T>> listeners;
+	
+	public String id;
 	
 	public MetaType type;
 	public T value;
 	
 	public MetaAccess access;
 	
-	public MetaValue(T value) {
+	public MetaValue(String id, T value) {
+		this.id = id;
 		listeners = new ArrayList<>();
 		this.value = value;
 		this.access = MetaAccess.READ_WRITE;
@@ -42,7 +45,8 @@ public class MetaValue<T> {
 		}
 	}
 	
-	public MetaValue(T value, MetaAccess access) {
+	public MetaValue(String id, T value, MetaAccess access) {
+		this.id = id;
 		listeners = new ArrayList<>();
 		this.value = value;
 		this.access = access;

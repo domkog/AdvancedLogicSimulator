@@ -8,7 +8,6 @@ public class ORComponent extends BasicGate implements Processable {
 
 	public ORComponent(int x, int y, int numInputs) {
 		super(1, Categories.LOGIC, "OR", x, y, numInputs, "resources/gates/AND.png", false);
-
 	}
 
 	@Override

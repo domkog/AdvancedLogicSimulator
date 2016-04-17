@@ -12,15 +12,13 @@ public class BitWidth {
 	
 	public BitWidth(int width) {
 		this.width = width;
-		this.maxWidth = Integer.getInteger(AdvancedLogicSimulator.config.get("maxBit"));
-		
+		this.maxWidth = Integer.parseInt(AdvancedLogicSimulator.config.get("maxBit"));
 	}
 	
 	public BitWidth() {
 		this(0);
-
-		
 	}
+	
 	public void setWidth(int width) {
 		this.width = Integer.min(this.maxWidth, width);
 		

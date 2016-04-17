@@ -1,6 +1,6 @@
 package at.fishkog.als.sim.data;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import at.fishkog.als.sim.data.meta.MetaValue;
 
@@ -11,8 +11,8 @@ public class Bounds extends Data{
 	public static Bounds EMPTY_BOUNDS = new Bounds(0,0);
 
 	public Bounds(int width, int height) {
-		this.width = new MetaValue<Integer>(width);
-		this.height = new MetaValue<Integer>(height);
+		this.width = new MetaValue<Integer>("Width", width);
+		this.height = new MetaValue<Integer>("Height", height);
 	}
 	
 	public MetaValue<Integer> getWidth() {
@@ -55,10 +55,10 @@ public class Bounds extends Data{
 	}
 	
 	@Override
-	public HashMap<String, MetaValue<?>> getMetaValues() {
-		HashMap<String, MetaValue<?>> result = new HashMap<String, MetaValue<?>>();
-		result.put("height", this.height);
-		result.put("width", this.width);
+	public ArrayList<MetaValue<?>> getMetaValues() {
+		ArrayList<MetaValue<?>> result = new ArrayList<MetaValue<?>>();
+		result.add(this.height);
+		result.add(this.width);
 		return result;
 		
 	}

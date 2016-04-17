@@ -1,6 +1,7 @@
 package at.fishkog.als.ui.common.dialogs;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
@@ -394,7 +395,7 @@ public class DialogOptions {
 	    btnOpenApp.setOnAction((e) -> { 
 	    	Desktop desktop = Desktop.getDesktop();
             try {
-				desktop.open(AdvancedLogicSimulator.pathAppdata);
+				desktop.open(new File(AdvancedLogicSimulator.pathAppdata));
 
 	        } catch (Exception ex) {
 	            ALSLogger.logger.warning("File/Directory could´t be opened!");
@@ -420,7 +421,7 @@ public class DialogOptions {
     		
     		Optional<ButtonType> result = alert.showAndWait();
     		if (result.get() == buttonTypeYes){
-    			FileUtils.deleteDir(AdvancedLogicSimulator.pathAppdata);
+    			FileUtils.deleteDir(new File(AdvancedLogicSimulator.pathAppdata));
     		    
     		    Alert alert2 = new Alert(AlertType.INFORMATION);
     		    alert2.setTitle("Information:");

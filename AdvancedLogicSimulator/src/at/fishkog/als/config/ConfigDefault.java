@@ -5,6 +5,7 @@ import java.util.Properties;
 public class ConfigDefault {
 	public static Properties propsDefault = new Properties();
 	public static Properties propsLogDefault = new Properties();
+	public static Properties propsWireDefault = new Properties();
 	
 	public static void init(){
 		//Layout Options
@@ -19,7 +20,7 @@ public class ConfigDefault {
 		propsDefault.setProperty("CNTRY", "GB");
 		
 		//Comp Options
-		propsDefault.setProperty("maxBit", "64");
+		propsDefault.setProperty("MAXBIT", "64");
 		
 		//DevOptions
 		 /*
@@ -43,6 +44,40 @@ public class ConfigDefault {
 		
 		propsLogDefault.setProperty("LOGPACKAGEINCONSOLE", "TRUE");
 		propsLogDefault.setProperty("LOGPACKAGEINLOGFILE", "TRUE");
+		
+		
+		
+		//WIRE PROPS
+		propsWireDefault.setProperty("TRUE_R", "0");
+		propsWireDefault.setProperty("TRUE_G", "0");
+		propsWireDefault.setProperty("TRUE_B", "0");
+		propsWireDefault.setProperty("TRUE_OP", "1");
 
+		propsWireDefault.setProperty("FALSE_R", "0");
+		propsWireDefault.setProperty("FALSE_G", "0");
+		propsWireDefault.setProperty("FALSE_B", "0");
+		propsWireDefault.setProperty("FALSE_OP", "1");
+
+		propsWireDefault.setProperty("NULL_R", "0");
+		propsWireDefault.setProperty("NULL_G", "0");
+		propsWireDefault.setProperty("NULL_B", "0");
+		propsWireDefault.setProperty("NULL_OP", "1");
+		
+		propsWireDefault.setProperty("UNKNOWN_R", "0");
+		propsWireDefault.setProperty("UNKNOWN_G", "0");
+		propsWireDefault.setProperty("UNKNOWN_B", "0");
+		propsWireDefault.setProperty("UNKNOWN_OP", "1");
+		
+		propsWireDefault.setProperty("ERROR_R", "0");
+		propsWireDefault.setProperty("ERROR_G", "0");
+		propsWireDefault.setProperty("ERROR_B", "0");
+		propsWireDefault.setProperty("ERROR_OP", "1");
+		
+		propsWireDefault.setProperty("INVISIBLE_R", "0");
+		propsWireDefault.setProperty("INVISIBLE_G", "0");
+		propsWireDefault.setProperty("INVISIBLE_B", "0");
+		propsWireDefault.setProperty("INVISIBLE_OP", "1");
+
+		
 	}	
 }

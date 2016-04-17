@@ -1,6 +1,6 @@
 package at.fishkog.als.sim.component.io;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import at.fishkog.als.sim.data.Data;
 import at.fishkog.als.sim.data.meta.MetaValue;
@@ -8,7 +8,7 @@ import at.fishkog.als.sim.data.meta.MetaValue;
 public class Output extends Data{
 
 	@Override
-	public HashMap<String, MetaValue<?>> getMetaValues() {
+	public ArrayList<MetaValue<?>> getMetaValues() {
 		// TODO Auto-generated method stub
 		return null;
 	}

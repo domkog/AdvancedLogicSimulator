@@ -50,8 +50,8 @@ public class PropertiesManager {
 		if (!dir.exists()) dir.mkdir();
 		
 		this.props=loadConfig(this.configFile, xml);
-			this.props=checkConfigFile(this.props,this.defaultProps);
-		
+		this.props=checkConfigFile(this.props,this.defaultProps);
+		writeConfig(configFile, this.props, name);
 	}
 
 	/**

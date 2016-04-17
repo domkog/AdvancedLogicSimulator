@@ -1,10 +1,9 @@
 package at.fishkog.als.sim.data;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import at.fishkog.als.sim.component.Component;
-import at.fishkog.als.sim.component.Wire;
+import at.fishkog.als.sim.component.placeable.wire.Wire;
 import at.fishkog.als.sim.data.meta.MetaValue;
 import at.fishkog.als.sim.data.meta.MetaValue.MetaAccess;
 
@@ -12,12 +11,11 @@ public class Connector extends Data {
 
 	public enum Type {
 		INPUT, OUTPUT
-		
 	}
 
 	public  Component component;
 	
-	public boolean isNegated;
+	public MetaValue<Boolean> isNegated;
 	
 	public MetaValue<String> id;
 	public MetaValue<Type> type;
@@ -31,25 +29,25 @@ public class Connector extends Data {
 	public Connector(Component component, String id, Type type, int x, int y, BitWidth bitWidth, boolean isNegated) {
 		this.component = component;
 		
-		this.id = new MetaValue<String>(id);
-		this.type = new MetaValue<Type>(type);
+		this.id = new MetaValue<String>("ID", id, MetaAccess.HIDDEN);
+		this.type = new MetaValue<Type>("Type", type, MetaAccess.HIDDEN);
 		location = new Location(x, y);
 		bounds = new Bounds(7, 7);
 		
 		this.bitwidth = bitWidth;
-
-		ArrayList<MetaValue<Data.State>> states = new ArrayList<MetaValue<Data.State>>();		
 		
-		for(MetaValue<Data.State> state : states) {
-			state.value = State.UNKOWN;
+		states = new ArrayList<MetaValue<Data.State>>();		
+		
+		for(int i = 0; i < bitwidth.getWidth(); i++) {
+			states.add(new MetaValue<Data.State>("State-" + i, State.UNKNOWN, MetaAccess.HIDDEN));
 		}
 		
-		this.isNegated = isNegated;
+		this.isNegated = new MetaValue<Boolean>("isNegated(" + id + ")", isNegated);
 		
-		location.x.access = MetaAccess.READ;
-		location.y.access = MetaAccess.READ;
-		bounds.width.access = MetaAccess.READ;
-		bounds.height.access = MetaAccess.READ;
+		location.x.access = MetaAccess.HIDDEN;
+		location.y.access = MetaAccess.HIDDEN;
+		bounds.width.access = MetaAccess.HIDDEN;
+		bounds.height.access = MetaAccess.HIDDEN;
 	}
 	
 	public boolean isWireConnected() {
@@ -98,16 +96,18 @@ public class Connector extends Data {
 	}
 			
 	@Override
-	public HashMap<String, MetaValue<?>> getMetaValues() {
-		HashMap<String, MetaValue<?>> result = new HashMap<String, MetaValue<?>>();
-		result.put("id", id);
-		result.put("type", type);
-		for(int i=0; i<this.bitwidth.getWidth(); i++) {
-			result.put("state." + i, this.states.get(i));
-			
+	public ArrayList<MetaValue<?>> getMetaValues() {
+		ArrayList<MetaValue<?>> result = new ArrayList<MetaValue<?>>();
+		result.add(id);
+		result.add(isNegated);
+		result.add(type);
+		if(this.bitwidth != null) {
+			for(int i=0; i < this.bitwidth.getWidth(); i++) {
+				result.add(this.states.get(i));
+			}
 		}
-		result.putAll(location.getMetaValues());
-		result.putAll(bounds.getMetaValues());
+		result.addAll(location.getMetaValues());
+		result.addAll(bounds.getMetaValues());
 		return result;
 	}
 

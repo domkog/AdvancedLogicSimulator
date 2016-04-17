@@ -1,8 +1,9 @@
 package at.fishkog.als.sim.data;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import at.fishkog.als.sim.data.meta.MetaValue;
+import at.fishkog.als.sim.data.meta.MetaValue.MetaAccess;
 
 public class BasicAttributes extends Data{
 	
@@ -18,13 +19,13 @@ public class BasicAttributes extends Data{
 	 * desc-pos: int position of the Description relative to the object (same as orientation)
 	 */
 	public BasicAttributes(int id, int category, String name, int orientation, String desc, int descPos) {
-		this.id = new MetaValue<Integer>(id);
-		this.category = new MetaValue<Integer>(category);
-		this.orientation = new MetaValue<Integer>(orientation);
-		this.descPos = new MetaValue<Integer>(descPos);
+		this.id = new MetaValue<Integer>("ID", id, MetaAccess.HIDDEN);
+		this.category = new MetaValue<Integer>("Category", category, MetaAccess.HIDDEN);
+		this.orientation = new MetaValue<Integer>("Orientation", orientation);
+		this.descPos = new MetaValue<Integer>("DescPos", descPos);
 	
-		this.name = new MetaValue<String>(name);
-		this.desc = new MetaValue<String>(desc);
+		this.name = new MetaValue<String>("Name", name);
+		this.desc = new MetaValue<String>("Desc", desc);
 	}
 	
 	public BasicAttributes(int id, int category, String name) {
@@ -81,14 +82,14 @@ public class BasicAttributes extends Data{
 	}
 	
 	@Override
-	public HashMap<String, MetaValue<?>> getMetaValues() {
-		HashMap<String, MetaValue<?>> result = new HashMap<String, MetaValue<?>>();
-		result.put("id", this.id);
-		result.put("category", this.category);
-		result.put("name", this.name);
-		result.put("orientation", this.orientation);
-		result.put("desc", this.desc);
-		result.put("descPos", this.descPos);
+	public ArrayList<MetaValue<?>> getMetaValues() {
+		ArrayList<MetaValue<?>> result = new ArrayList<MetaValue<?>>();
+		result.add(this.id);
+		result.add(this.category);
+		result.add(this.name);
+		result.add(this.orientation);
+		result.add(this.desc);
+		result.add(this.descPos);
 		return result;
 	}
 

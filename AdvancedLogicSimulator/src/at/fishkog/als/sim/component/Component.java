@@ -1,7 +1,6 @@
 package at.fishkog.als.sim.component;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import at.fishkog.als.sim.component.categories.ComponentCategory;
@@ -13,6 +12,7 @@ import at.fishkog.als.sim.data.Data;
 import at.fishkog.als.sim.data.Location;
 import at.fishkog.als.sim.data.meta.MetaValue;
 import at.fishkog.als.sim.data.meta.MetaValueListener;
+import at.fishkog.als.sim.data.meta.MetaValue.MetaAccess;
 
 //Base class that all components need to implement
 public abstract class Component extends Data {
@@ -53,6 +53,8 @@ public abstract class Component extends Data {
 			}
 		});
 		bounds = new Bounds(width, height);
+		bounds.height.access = MetaAccess.HIDDEN;
+		bounds.width.access = MetaAccess.HIDDEN;
 		connectors = new ArrayList<Connector>();
 		inputs = new ArrayList<Connector>();
 		outputs = new ArrayList<Connector>();
@@ -78,6 +80,11 @@ public abstract class Component extends Data {
 		ArrayList<Connector> result = connectors.stream().filter((Connector c) -> c.id.value.equalsIgnoreCase(id)).collect(Collectors.toCollection(ArrayList::new));
 		if(result.isEmpty()) return null;
 		else return result.get(0);
+	}
+	
+	public Connector getConnector(int id) {
+		return connectors.get(id);
+				
 	}
 	
 	public boolean hasConnectorState(Connector c, int bit, State state) {
@@ -255,12 +262,12 @@ public abstract class Component extends Data {
 	}
 
 	@Override
-	public HashMap<String, MetaValue<?>> getMetaValues() {
-		HashMap<String, MetaValue<?>> result = new HashMap<String, MetaValue<?>>();
-		result.putAll(basicAttributes.getMetaValues());
-		result.putAll(location.getMetaValues());
-		result.putAll(bounds.getMetaValues());
-		connectors.forEach((c) -> result.putAll(c.getMetaValues()));
+	public ArrayList<MetaValue<?>> getMetaValues() {
+		ArrayList<MetaValue<?>> result = new ArrayList<MetaValue<?>>();
+		result.addAll(basicAttributes.getMetaValues());
+		result.addAll(location.getMetaValues());
+		result.addAll(bounds.getMetaValues());
+		connectors.forEach((c) -> result.addAll(c.getMetaValues()));
 		return result;
 	}
 	

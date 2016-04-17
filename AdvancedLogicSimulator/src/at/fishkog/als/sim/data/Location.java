@@ -1,6 +1,6 @@
 package at.fishkog.als.sim.data;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import at.fishkog.als.sim.data.meta.MetaValue;
 
@@ -9,8 +9,8 @@ public class Location extends Data {
 	public final MetaValue<Integer> x, y;
 	
 	public Location (int x, int y) {
-		this.x = new MetaValue<Integer>(x);
-		this.y = new MetaValue<Integer>(y);
+		this.x = new MetaValue<Integer>("X", x);
+		this.y = new MetaValue<Integer>("Y", y);
 		
 	}
 	
@@ -57,11 +57,25 @@ public class Location extends Data {
 	}
 	
 	@Override
-	public HashMap<String, MetaValue<?>> getMetaValues() {
-		HashMap<String, MetaValue<?>> result = new HashMap<String, MetaValue<?>>();
-		result.put("x", x);
-		result.put("y", y);
+	public ArrayList<MetaValue<?>> getMetaValues() {
+		ArrayList<MetaValue<?>> result = new ArrayList<MetaValue<?>>();
+		result.add(x);
+		result.add(y);
 		return result;
 		
 	}	
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof Location) {
+			Location extLoc = (Location) obj;
+			
+			return(extLoc.getIntX() == this.getIntX() && extLoc.getIntY() == this.getIntY());
+			
+		} else {
+			return false;
+			
+		}
+		
+	}
 }

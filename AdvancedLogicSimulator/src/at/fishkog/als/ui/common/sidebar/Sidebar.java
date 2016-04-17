@@ -2,7 +2,6 @@ package at.fishkog.als.ui.common.sidebar;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import at.fishkog.als.AdvancedLogicSimulator;
 import at.fishkog.als.lang.LanguageManager;
@@ -10,27 +9,28 @@ import at.fishkog.als.sim.component.Component;
 import at.fishkog.als.sim.component.categories.CategoryManager;
 import at.fishkog.als.sim.component.categories.ComponentCategory;
 import at.fishkog.als.sim.data.meta.MetaValue;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
-import javafx.util.StringConverter;
 
 public class Sidebar extends VBox {
 
 	private LinkedHashMap<String, TitledPane> panes;
 	private HashMap<String, SidebarTreeView<Component>> content;
 	
-	private TableView metaTable;
+	private TableView<MetaValue<?>> metaTable;
 	public static MetaTableUpdater tableUpdater;
 	
 	private LanguageManager l = AdvancedLogicSimulator.lang;
@@ -82,7 +82,7 @@ public class Sidebar extends VBox {
         
         this.initMetaTable();
         
-        this.tableUpdater = new MetaTableUpdater(this.metaTable);
+        tableUpdater = new MetaTableUpdater(this.metaTable);
         
         metaPane.setContent(metaTable);
         metaBox.getChildren().add(metaPane);
@@ -91,32 +91,38 @@ public class Sidebar extends VBox {
         scrollPane.setContent(sidebarContainer);
     }
      
-    private void initMetaTable() {
-    	TableColumn<Map, MetaValue<?>> columnKey = new TableColumn<>(l.getString("Attribute"));
+    @SuppressWarnings("unchecked")
+	private void initMetaTable() {
+    	TableColumn<MetaValue<?>, String> columnKey = new TableColumn<>(l.getString("Attribute"));
     	columnKey.setEditable(false);
     	
-    	TableColumn<Map, MetaValue<?>> columnValue = new TableColumn<>(l.getString("Value"));
-
+    	columnKey.setCellValueFactory(new Callback<CellDataFeatures<MetaValue<?>, String>, ObservableValue<String>>() {
+    		public ObservableValue<String> call(CellDataFeatures<MetaValue<?>, String> p) {
+    			if (p.getValue() != null) {
+    	            return new SimpleStringProperty(p.getValue().id);
+    	        } else {
+    	            return new SimpleStringProperty("<no key>");
+    	        }
+    		}
+    	});
+    	
+    	TableColumn<MetaValue<?>, Object> columnValue = new TableColumn<>(l.getString("Value"));
+    	columnValue.setEditable(true);
+    	
+    	columnValue.setCellValueFactory(new Callback<CellDataFeatures<MetaValue<?>, Object>, ObservableValue<Object>>() {
+    		public ObservableValue<Object> call(CellDataFeatures<MetaValue<?>, Object> p) {
+    			if (p.getValue() != null) {
+    	            return new SimpleObjectProperty<Object>(p.getValue().getValue());
+    	        } else {
+    	            return new SimpleObjectProperty<Object>("<no value>");
+    	        }
+    		}
+    	});
+    	
     	metaTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     	metaTable.getSelectionModel().setCellSelectionEnabled(true);
     	
-    	metaTable.getColumns().setAll(columnValue,columnKey);
-    	
-    	Callback<TableColumn<Map, MetaValue<?>>, TableCell<Map, MetaValue<?>>> cellFactoryForMap = (TableColumn<Map, MetaValue<?>> p) -> 
-        new TextFieldTableCell(new StringConverter() {
-            @Override
-            public String toString(Object t) {
-       	 	if(t!=null)  return t.toString(); else return "test";
-        	 }
-            @Override
-            public Object fromString(String string) {
-                return string;
-                
-            }
-        });
-    	 
-        columnKey.setCellFactory(cellFactoryForMap);
-        columnValue.setCellFactory(cellFactoryForMap);
+    	metaTable.getColumns().setAll(columnKey, columnValue);
     }
     
     private void initPanes() {
