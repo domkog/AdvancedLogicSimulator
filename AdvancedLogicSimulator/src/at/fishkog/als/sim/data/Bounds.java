@@ -1,6 +1,5 @@
 package at.fishkog.als.sim.data;
 
-import java.util.ArrayList;
 
 import at.fishkog.als.sim.data.meta.MetaValue;
 
@@ -11,8 +10,12 @@ public class Bounds extends Data{
 	public static Bounds EMPTY_BOUNDS = new Bounds(0,0);
 
 	public Bounds(int width, int height) {
+		super();
+		
 		this.width = new MetaValue<Integer>("Width", width);
 		this.height = new MetaValue<Integer>("Height", height);
+		
+		this.metaData.add(this.width, this.height);
 	}
 	
 	public MetaValue<Integer> getWidth() {
@@ -31,16 +34,6 @@ public class Bounds extends Data{
 		return height.getValue();
 	}
 
-	public boolean intersects(int x, int y, int mouseX, int mouseY) {
-		return mouseX >= x && mouseX <= x + width.value && mouseY >= y && mouseY <= y + height.value;
-	}
-	
-	//Fix this not working
-	public boolean isVisible(int x, int y, int offsetX, int offsetY, int screenWidth, int screenHeight) {
-		return true;
-		//return isInside(x, y, offsetX, offsetY, screenWidth, screenHeight);
-	}
-	
 	public boolean isInside(int x, int y, int rectX, int rectY, int width, int height) {
 		Location[] corners = new Location[]{
 			new Location(x, y),
@@ -54,12 +47,4 @@ public class Bounds extends Data{
 		return false;
 	}
 	
-	@Override
-	public ArrayList<MetaValue<?>> getMetaValues() {
-		ArrayList<MetaValue<?>> result = new ArrayList<MetaValue<?>>();
-		result.add(this.height);
-		result.add(this.width);
-		return result;
-		
-	}
 }

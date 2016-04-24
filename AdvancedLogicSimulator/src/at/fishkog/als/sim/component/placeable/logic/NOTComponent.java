@@ -3,29 +3,33 @@ package at.fishkog.als.sim.component.placeable.logic;
 import at.fishkog.als.sim.component.BasicComponent;
 import at.fishkog.als.sim.component.Processable;
 import at.fishkog.als.sim.component.categories.Categories;
+import at.fishkog.als.sim.data.Connector;
 import javafx.scene.Group;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.StrokeType;
 
-public class NANDComponent extends BasicComponent implements Processable {
+public class NOTComponent extends BasicComponent implements Processable {
 
-	public NANDComponent(int x, int y, int numInputs, int bitwidth) {
-		super(5, Categories.LOGIC, "NAND", x, y, numInputs, bitwidth,true);
-
+	public NOTComponent(int x, int y, int numInputs, int bitwidth) {
+		super(3, Categories.LOGIC, "NOT", x, y, numInputs,bitwidth, true);
+		this.bounds.height.setValue(this.bounds.height.getValue()/2);
+		this.bounds.width.setValue(this.bounds.width.getValue()/2);
+		
 	}
 
 	@Override
 	public void process() {	
-
-		
+		Connector cOut = this.outputs.get(0);
+		for(int i=0; i<this.bitwidth.getWidth(); i++){
+			cOut.setState(i, inputs.get(0).getState(i).negate());				
+			
+		}
 	}
 
 	@Override
 	public Group getRenderparts() {
 		double height = this.bounds.getIntHeight();
-		double width = this.bounds.getIntWidth()/2;
+		double width = this.bounds.getIntWidth();
 		
 		Group res = new Group();
 		
@@ -33,20 +37,14 @@ public class NANDComponent extends BasicComponent implements Processable {
 		base.setStrokeType(StrokeType.INSIDE);
 		base.setStrokeWidth(4);
 		base.getPoints().addAll(new Double[]{
-				width,0.0,
 				0.0,0.0,
+				width, height/2,
 				0.0, height,
-				width, height,
+				0.0,0.0
 				
 		});
-		
-		Arc arc = new Arc(width, height/2, width, height/2, 270, 180);
-		arc.setStrokeWidth(4);
-		arc.setStrokeType(StrokeType.INSIDE);
-		arc.setStroke(Color.BLACK);
-		arc.setFill(Color.TRANSPARENT);
-		
-		res.getChildren().setAll(base,arc);
+				
+		res.getChildren().setAll(base);
 		return res;
 	}
 

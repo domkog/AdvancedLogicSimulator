@@ -1,7 +1,5 @@
 package at.fishkog.als.sim.data;
 
-import java.util.ArrayList;
-
 import at.fishkog.als.sim.data.meta.MetaValue;
 import at.fishkog.als.sim.data.meta.MetaValue.MetaAccess;
 
@@ -19,6 +17,8 @@ public class BasicAttributes extends Data{
 	 * desc-pos: int position of the Description relative to the object (same as orientation)
 	 */
 	public BasicAttributes(int id, int category, String name, int orientation, String desc, int descPos) {
+		super();
+		
 		this.id = new MetaValue<Integer>("ID", id, MetaAccess.HIDDEN);
 		this.category = new MetaValue<Integer>("Category", category, MetaAccess.HIDDEN);
 		this.orientation = new MetaValue<Integer>("Orientation", orientation);
@@ -26,6 +26,8 @@ public class BasicAttributes extends Data{
 	
 		this.name = new MetaValue<String>("Name", name);
 		this.desc = new MetaValue<String>("Desc", desc);
+		
+		this.metaData.add(this.id, this.category, this.name, this.orientation, this.desc, this.descPos);
 	}
 	
 	public BasicAttributes(int id, int category, String name) {
@@ -81,16 +83,9 @@ public class BasicAttributes extends Data{
 		
 	}
 	
-	@Override
-	public ArrayList<MetaValue<?>> getMetaValues() {
-		ArrayList<MetaValue<?>> result = new ArrayList<MetaValue<?>>();
-		result.add(this.id);
-		result.add(this.category);
-		result.add(this.name);
-		result.add(this.orientation);
-		result.add(this.desc);
-		result.add(this.descPos);
-		return result;
+	public void getNextRotation(boolean clockwise) {
+		orientation.setValue(orientation.getValue()+1);
+		
 	}
 
 }

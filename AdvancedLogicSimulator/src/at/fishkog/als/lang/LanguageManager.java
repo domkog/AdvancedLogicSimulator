@@ -250,6 +250,13 @@ public class LanguageManager {
 		return false;
 	}
 	
+	@Override
+	public int hashCode() {
+		assert false: "hasCode not designated!";
+		return 42;
+		
+	}
+	
 	public File getDir() {
 		return dir;
 		

@@ -23,6 +23,9 @@ public class ConfigDefault {
 		propsDefault.setProperty("MAXBIT", "64");
 		
 		//DevOptions
+		propsDefault.setProperty("SHOWHITBOX", "FALSE");
+		
+		//LogOptions
 		 /*
 		 *ALL
 		 *CONFIG

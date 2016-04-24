@@ -6,6 +6,7 @@ import at.fishkog.als.sim.component.Component;
 import at.fishkog.als.sim.component.placeable.wire.Wire;
 import at.fishkog.als.sim.data.meta.MetaValue;
 import at.fishkog.als.sim.data.meta.MetaValue.MetaAccess;
+import javafx.scene.Node;
 
 public class Connector extends Data {
 
@@ -19,27 +20,34 @@ public class Connector extends Data {
 	
 	public MetaValue<String> id;
 	public MetaValue<Type> type;
-	public ArrayList<MetaValue<Data.State>> states;
+	public ArrayList<MetaValue<State>> states;
 	
 	public Location location;
 	public Bounds bounds;
 	
 	public Wire connectedWire;
 	
+	private Node node;
+	
+	public BitWidth bitwidth;
+	
 	public Connector(Component component, String id, Type type, int x, int y, BitWidth bitWidth, boolean isNegated) {
+		super();
+		
 		this.component = component;
 		
 		this.id = new MetaValue<String>("ID", id, MetaAccess.HIDDEN);
 		this.type = new MetaValue<Type>("Type", type, MetaAccess.HIDDEN);
-		location = new Location(x, y);
-		bounds = new Bounds(7, 7);
+		bounds = new Bounds(5, 5);
 		
 		this.bitwidth = bitWidth;
 		
-		states = new ArrayList<MetaValue<Data.State>>();		
+		states = new ArrayList<MetaValue<State>>();		
+		
+		this.location = new Location(x, y);
 		
 		for(int i = 0; i < bitwidth.getWidth(); i++) {
-			states.add(new MetaValue<Data.State>("State-" + i, State.UNKNOWN, MetaAccess.HIDDEN));
+			states.add(new MetaValue<State>("State-" + i, State.UNKNOWN, MetaAccess.HIDDEN));
 		}
 		
 		this.isNegated = new MetaValue<Boolean>("isNegated(" + id + ")", isNegated);
@@ -48,6 +56,15 @@ public class Connector extends Data {
 		location.y.access = MetaAccess.HIDDEN;
 		bounds.width.access = MetaAccess.HIDDEN;
 		bounds.height.access = MetaAccess.HIDDEN;
+		
+		/*MetaData*/
+		metaData.add(this.isNegated, this.type);
+		if(this.bitwidth != null) {
+			for(int i=0; i < this.bitwidth.getWidth(); i++) {
+				metaData.add(this.states.get(i));
+			}
+		}
+		metaData.add(location.getMetaData(), bounds.getMetaData());
 	}
 	
 	public boolean isWireConnected() {
@@ -63,10 +80,6 @@ public class Connector extends Data {
 		this.connectedWire = null;
 	}
 	
-	public boolean intersects(int mouseX, int mouseY) {
-		return bounds.intersects(location.getIntX(), location.getIntY(), mouseX, mouseY);
-	}
-	
 	public void onDraggedStarted() {
 	}
 	
@@ -80,35 +93,39 @@ public class Connector extends Data {
 		if(isWireConnected()) connectedWire.onMoved();
 	}
 	
-	public Data.State getState(int id){
-		return this.states.get(id).value;
+	public State getState(int id){
+		return this.states.get(id).getValue();
 		
 	}
 	
-	public void setState(int id, Data.State state) {
+	public void setState(int id, State state) {
 		this.states.get(id).setValue(state);
 		
 	}
 	
-	public boolean hasState(int id, Data.State state) {
-		return this.states.get(id).value == state;
+	public boolean hasState(int id, State state) {
+		return this.states.get(id).getValue() == state;
 		
 	}
-			
-	@Override
-	public ArrayList<MetaValue<?>> getMetaValues() {
-		ArrayList<MetaValue<?>> result = new ArrayList<MetaValue<?>>();
-		result.add(id);
-		result.add(isNegated);
-		result.add(type);
-		if(this.bitwidth != null) {
-			for(int i=0; i < this.bitwidth.getWidth(); i++) {
-				result.add(this.states.get(i));
-			}
-		}
-		result.addAll(location.getMetaValues());
-		result.addAll(bounds.getMetaValues());
-		return result;
+	
+	public boolean hasValidState(int id) {
+		return this.states.get(id).getValue().isValid();
+		
+	}
+	
+	public boolean hasNode() {
+		return this.node != null;
+		
+	}
+	
+	public void setNode(Node node) {
+		this.node = node;
+		
+	}
+	
+	public Node getNode() {
+		return this.node;
+		
 	}
 
 }

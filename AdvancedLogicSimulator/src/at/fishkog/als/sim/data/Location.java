@@ -1,7 +1,5 @@
 package at.fishkog.als.sim.data;
 
-import java.util.ArrayList;
-
 import at.fishkog.als.sim.data.meta.MetaValue;
 
 public class Location extends Data {
@@ -9,9 +7,12 @@ public class Location extends Data {
 	public final MetaValue<Integer> x, y;
 	
 	public Location (int x, int y) {
+		super();
+		
 		this.x = new MetaValue<Integer>("X", x);
 		this.y = new MetaValue<Integer>("Y", y);
 		
+		this.metaData.add(this.x, this.y);
 	}
 	
 	/*
@@ -53,17 +54,8 @@ public class Location extends Data {
 			height *= -1;
 			y -= height;
 		}
-		return (this.x.value >= x && this.x.value <= (x + width)) && (this.y.value >= y && this.y.value <= (y + height));
+		return (this.x.getValue() >= x && this.x.getValue() <= (x + width)) && (this.y.getValue() >= y && this.y.getValue() <= (y + height));
 	}
-	
-	@Override
-	public ArrayList<MetaValue<?>> getMetaValues() {
-		ArrayList<MetaValue<?>> result = new ArrayList<MetaValue<?>>();
-		result.add(x);
-		result.add(y);
-		return result;
-		
-	}	
 	
 	@Override
 	public boolean equals(Object obj) {

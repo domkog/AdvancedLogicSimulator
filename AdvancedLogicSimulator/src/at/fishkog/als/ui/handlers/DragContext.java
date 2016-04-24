@@ -1,4 +1,4 @@
-package at.fishkog.als.ui.common;
+package at.fishkog.als.ui.handlers;
 
 public class DragContext {
 

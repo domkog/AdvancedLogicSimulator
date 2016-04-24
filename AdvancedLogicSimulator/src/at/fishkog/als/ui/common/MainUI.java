@@ -3,10 +3,11 @@ package at.fishkog.als.ui.common;
 import at.fishkog.als.AdvancedLogicSimulator;
 import at.fishkog.als.lang.LanguageManager;
 import at.fishkog.als.ui.UI;
+import at.fishkog.als.ui.actions.Actions;
 import at.fishkog.als.ui.common.dialogs.DialogOptions;
-import at.fishkog.als.ui.common.renderer.PannableCanvas;
-import at.fishkog.als.ui.common.renderer.TempComponentRenderer;
+import at.fishkog.als.ui.common.renderer.ComponentRenderer;
 import at.fishkog.als.ui.common.sidebar.Sidebar;
+import at.fishkog.als.ui.handlers.SceneInputHandler;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
@@ -19,8 +20,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -33,12 +32,14 @@ public class MainUI extends UI {
 	public Scene scene;
 	
 	public Canvas canvasBackground, canvasObjects;
-	public InputHandler inputHandler;
+	public SceneInputHandler inputHandler;
 	
 	public ToolBar footer;
 	public Text mousePos;
 	
 	private LanguageManager l;
+	
+	public MenuItem menuItemUndo;
 	
 	@Override
 	public String getID() {
@@ -53,6 +54,16 @@ public class MainUI extends UI {
 		menuBar.setId("mainMenuBar");
         Menu menuFile = new Menu(l.getString("File"));
         Menu menuEdit = new Menu(l.getString("Edit"));
+        
+        menuItemUndo = new MenuItem(l.getString("Undo"));  
+        menuItemUndo.setId("MainMenuBarSub");
+        menuItemUndo.setAccelerator(KeyCombination.keyCombination("CTRL+Z"));
+        menuItemUndo.setOnAction((e) -> {
+        	//TODO Change Actions location -> Project
+        	Actions.instance.undo();
+        });
+        menuEdit.getItems().addAll(menuItemUndo);
+        
         Menu menuView = new Menu(l.getString("View"));
  
       //Help Menu
@@ -77,8 +88,7 @@ public class MainUI extends UI {
         
         ToolBar header = new ToolBar(
         		new Button(l.getString("NewProject")),
-        		new Button(l.getString("Delete")), 
-        		new Button(l.getString("Undo")));
+        		new Button(l.getString("Delete")));
         root.getChildren().add(header);
         
 		HBox hWrapper = new HBox(1);
@@ -89,20 +99,15 @@ public class MainUI extends UI {
 		whiteboard.setPrefWidth(1300);
 				
 		// create canvas
-		PannableCanvas CanvasComponents = new PannableCanvas(1300, 600);
-        Canvas canvasGrid = new Canvas(1300,600);
-        
-        MouseInputHandler sceneGestures = new MouseInputHandler(CanvasComponents);
-        scene.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
-        scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
-        scene.addEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
+		PannableCanvas canvasComponents = new PannableCanvas(1000, 1000);		 		
+		Canvas canvasGrid = new Canvas(500,500);
 		
 		hWrapper.getChildren().add(sidePanel);
 		TabPane tabPane = new TabPane();
 		Tab main = new Tab();
 		main.setText("Main");
 		
-		Pane canvasPane = new Pane(CanvasComponents, canvasGrid);
+		Pane canvasPane = new Pane(canvasComponents, canvasGrid);
 		canvasPane.setId("Comp-Grid");
 		
 		tabPane.prefHeightProperty().addListener((arg0, from, to) -> {
@@ -115,11 +120,10 @@ public class MainUI extends UI {
         	AdvancedLogicSimulator.renderer.repaint();
         	
         });
-			
+		
 		main.setContent(canvasPane);        
-       
-		AdvancedLogicSimulator.renderer = new TempComponentRenderer(this, canvasGrid, CanvasComponents); 
-		AdvancedLogicSimulator.renderer.repaint();
+
+		AdvancedLogicSimulator.renderer = new ComponentRenderer(this, canvasGrid, canvasComponents); 
 		
 		tabPane.getTabs().add(main);
 		hWrapper.getChildren().add(tabPane);

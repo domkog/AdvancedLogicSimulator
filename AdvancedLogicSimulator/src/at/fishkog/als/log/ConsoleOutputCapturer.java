@@ -1,4 +1,4 @@
-package at.fishkog.als.utils;
+package at.fishkog.als.log;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;

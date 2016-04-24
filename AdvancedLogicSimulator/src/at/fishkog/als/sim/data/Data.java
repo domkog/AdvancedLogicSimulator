@@ -1,35 +1,23 @@
 package at.fishkog.als.sim.data;
 
-import java.util.ArrayList;
-
 import at.fishkog.als.AdvancedLogicSimulator;
-import at.fishkog.als.config.PropertiesManager;
-import at.fishkog.als.sim.data.meta.MetaValue;
-import javafx.scene.paint.Color;
+import at.fishkog.als.lang.LanguageManager;
+import at.fishkog.als.sim.data.meta.MetaData;
 
-public abstract class Data {
-		
-	public abstract ArrayList<MetaValue<?>> getMetaValues();
+public class Data {
 	
-	public enum State {
-		TRUE, FALSE, NULL, UNKNOWN, ERROR, INVISIBLE;
+	public MetaData metaData;	
+	public static LanguageManager l;
 	
-		protected PropertiesManager wireConfig = AdvancedLogicSimulator.wireConfig;
-		public Color getColor() {
-			double r, g, b, op;
-			
-			r = Integer.valueOf(this.wireConfig.get(this.name() + "_R"));
-			g = Integer.valueOf(this.wireConfig.get(this.name() + "_R"));
-			b = Integer.valueOf(this.wireConfig.get(this.name() + "_R"));
-			op = Integer.valueOf(this.wireConfig.get(this.name() + "_OP"));
-			
-			return new Color(r,g,b, op);
-		}
+	public Data() {
+		this.metaData = new MetaData();
+		Data.l = AdvancedLogicSimulator.lang;
+	}
+	
+	public MetaData getMetaData() {
+		return this.metaData;
 		
 	}
 	
-	
-	
-	public BitWidth bitwidth;
 	
 }

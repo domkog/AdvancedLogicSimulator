@@ -1,127 +1,318 @@
 package at.fishkog.als.ui.common.renderer;
 
 import at.fishkog.als.AdvancedLogicSimulator;
+import at.fishkog.als.config.PropertiesManager;
+import at.fishkog.als.sim.component.BasicComponent;
 import at.fishkog.als.sim.component.Component;
+import at.fishkog.als.sim.component.placeable.wire.Wire;
 import at.fishkog.als.sim.data.Connector;
 import at.fishkog.als.sim.data.Location;
 import at.fishkog.als.ui.common.MainUI;
+import at.fishkog.als.ui.common.PannableCanvas;
+import at.fishkog.als.ui.customNodes.ComponentGroup;
+import at.fishkog.als.ui.customNodes.ConnectorCircle;
+import at.fishkog.als.ui.customNodes.ConnectorLine;
+import at.fishkog.als.ui.customNodes.CustomGroup;
+import at.fishkog.als.ui.customNodes.WireLine;
+import at.fishkog.als.ui.handlers.NodeInputHandler;
+import at.fishkog.als.ui.handlers.SceneInputHandler;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Rotate;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 
 public class ComponentRenderer {
+	public Canvas grid;
+	
+	private PannableCanvas canvas;
+	
+	public int compCount =0;
+	public int wiresCount =0;
 
-	private MainUI mainUI;
-	private Canvas canvas, background;
+	private NodeInputHandler nodeHandler;
+	private SceneInputHandler inputHandler;
 	
-	private Color hovered = Color.rgb((int) (Color.GRAY.getRed() * 255), (int) (Color.GRAY.getGreen() * 255), (int) (Color.GRAY.getBlue() * 255), 0.33);
-	private Color selected = Color.rgb((int) (Color.AQUA.getRed() * 255), (int) (Color.AQUA.getGreen() * 255), (int) (Color.AQUA.getBlue() * 255), 0.33);
+	private PropertiesManager config;
 	
-	public ComponentRenderer(MainUI mainUI, Canvas background, Canvas canvas) {
-		this.mainUI = mainUI;
+	private static Color gridColor = new Color(Color.LIGHTGRAY.getRed(), Color.LIGHTGRAY.getGreen(), Color.LIGHTGRAY.getBlue(), 0.4);
+
+	
+	public ComponentRenderer(MainUI mainUI, Canvas grid, PannableCanvas canvas) {
+		this.grid = grid;
 		this.canvas = canvas;
-		this.background = background;
+
+    	this.inputHandler = new SceneInputHandler(this.canvas);
+		this.nodeHandler = new NodeInputHandler(canvas);
+
+		this.config = AdvancedLogicSimulator.config;
+		
+		for(Component d: AdvancedLogicSimulator.logicCanvas.components) {
+			if (d instanceof Wire){
+				Wire wire = (Wire) d;
+				WireLine t_w = createWire(wire);
+				this.canvas.getChildren().add(t_w);
+				this.wiresCount++;
+				
+			} else if (d instanceof BasicComponent) {
+				BasicComponent c = (BasicComponent) d;
+				ComponentGroup t_c = createComponent(c);
+				this.canvas.getChildren().add(t_c);
+				this.compCount++;
+			
+			}
+		}
+		
+		this.repaint();
 	}
 	
 	public void repaint() {
-		this.drawComponents();
-		this.drawBackground();
+		drawGrid();
+		addSceneHandlers();
+		
+		
 	}
 	
-	public void drawComponents() {
-		final GraphicsContext gc2 = canvas.getGraphicsContext2D();
-		gc2.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+	private void drawGrid(){
+		double w = grid.getWidth();
+        double h = grid.getHeight();
+        
+        GraphicsContext gc = grid.getGraphicsContext2D();
+
+        gc.clearRect(0, 0, w, h);
+        
+        gc.setStroke(gridColor);
+        gc.setLineWidth(1);
+
+        //draw grid lines
+        //This scale is not perfect grid position is jumping
+        
+        double offset = 10 * canvas.myScale.doubleValue();
+
+        double x = (canvas.getTranslateX() - grid.getTranslateX()) % offset -offset;
+        double y = (canvas.getTranslateY() - grid.getTranslateY()) % offset -offset;
+        
+        for(int i = 0; i < (w / offset) ;i++) {
+			gc.strokeLine(i * offset + x -0.5, y-0.5, i * offset + x-0.5, h + y-0.5);
+			
+		}
+		for(int i = 0; i < (h / offset) ;i++) {
+			gc.strokeLine(x-0.5, i * offset + y-0.5, w + x-0.5, i * offset + y-0.5);
+			
+		}
 		
-		gc2.setStroke(Color.BLACK);
-		for(Component c: AdvancedLogicSimulator.logicCanvas.components) {
-			if(!c.isVisible((int) mainUI.inputHandler.offsetX,(int) mainUI.inputHandler.offsetY,(int) this.canvas.getWidth(),(int) this.canvas.getHeight())) {
-				System.out.println("Not Visible");
-				continue;
-			}
-			if(c.hasTexture()) {
-				drawRotatedImage(gc2, c.renderContext.getImage(), (90 * c.basicAttributes.getOrientation().value), c.renderLocation.getIntX() + mainUI.inputHandler.offsetX, c.renderLocation.getIntY() + mainUI.inputHandler.offsetY);
+		grid.toBack();
+		
+	}
+	
+	private Group getExtensionLine(BasicComponent c) {
+		Line extLine;
+		Line extLine2;
+		Group res = new Group();
+		
+		if(c.inputs.size() < 4) return new Group();
+		int extLength = 0;
+		int conNum = c.inputs.size();
+				
+		if (conNum > 3) {
+			if(conNum % 2 == 0) {
+				extLength = (conNum -3) * c.getConnector(0).bounds.getIntHeight();
+			
 			} else {
-				gc2.strokeRect(c.location.getIntX() + mainUI.inputHandler.offsetX, c.location.getIntY() + mainUI.inputHandler.offsetY, c.bounds.getIntWidth(), c.bounds.getIntHeight());
+				extLength = (conNum -4) * c.getConnector(0).bounds.getIntHeight();
+				
 			}
-			
-			for(Connector con: c.connectors) {
-				if (con.isNegated) {
-					gc2.strokeOval(con.location.getIntX() + mainUI.inputHandler.offsetX, con.location.getIntY() + mainUI.inputHandler.offsetY, con.bounds.getIntWidth(), con.bounds.getIntHeight());
-					if(mainUI.inputHandler.hoveredConnector == con) {
-						gc2.setFill(selected);
-						gc2.fillOval(con.location.getIntX() + mainUI.inputHandler.offsetX, con.location.getIntY() + mainUI.inputHandler.offsetY, con.bounds.getIntWidth(), con.bounds.getIntHeight());
-					}
-				} else {
-					gc2.strokeLine(con.location.getIntX() + mainUI.inputHandler.offsetX + (c.isConnectorVertical() ? 0 : 2.5), con.location.getIntY() + mainUI.inputHandler.offsetY + (c.isConnectorVertical() ? 3 : 0), con.location.getIntX() + mainUI.inputHandler.offsetX + (c.isConnectorVertical() ? 6 : 2.5), con.location.getIntY() + mainUI.inputHandler.offsetY + (c.isConnectorVertical() ? 3 : 6)) ;
-					if(mainUI.inputHandler.hoveredConnector == con) {
-						gc2.strokeOval(con.location.getIntX() + mainUI.inputHandler.offsetX, con.location.getIntY() + mainUI.inputHandler.offsetY, con.bounds.getIntWidth(), con.bounds.getIntHeight());
-					}
-				}				
-			}
-			
-			int extansion = c.getExtansionSize();
-			if(extansion > 0) {
-				Location[] loc = c.getExtansionLocation();
-				gc2.strokeLine(loc[0].getIntX() + mainUI.inputHandler.offsetX, loc[0].getIntY() + mainUI.inputHandler.offsetY,
-						loc[1].getIntX() + mainUI.inputHandler.offsetX, loc[1].getIntY() + mainUI.inputHandler.offsetY);
-			}
+		}
 
-			if((mainUI.inputHandler.selected != null && mainUI.inputHandler.selected.contains(c)) || 
-					mainUI.inputHandler.dragged != null && mainUI.inputHandler.dragged == c) {
-				gc2.setFill(selected);
-				gc2.setStroke(selected.darker());
-				gc2.fillRect(c.location.getIntX() + mainUI.inputHandler.offsetX, c.location.getIntY() + mainUI.inputHandler.offsetY, c.bounds.getIntWidth(), c.bounds.getIntHeight());
-				gc2.strokeRect(c.location.getIntX() + mainUI.inputHandler.offsetX, c.location.getIntY() + mainUI.inputHandler.offsetY, c.bounds.getIntWidth(), c.bounds.getIntHeight());
-				gc2.setStroke(Color.BLACK);
-			} else if(mainUI.inputHandler.hoveredComponent != null && mainUI.inputHandler.hoveredComponent == c ) {
-				gc2.setFill(hovered);
-				gc2.setStroke(hovered.darker());
-				gc2.fillRect(c.location.getIntX() + mainUI.inputHandler.offsetX, c.location.getIntY() + mainUI.inputHandler.offsetY, c.bounds.getIntWidth(), c.bounds.getIntHeight());
-				gc2.strokeRect(c.location.getIntX() + mainUI.inputHandler.offsetX, c.location.getIntY() + mainUI.inputHandler.offsetY, c.bounds.getIntWidth(), c.bounds.getIntHeight());
-				gc2.setStroke(Color.BLACK);
-			}
-		}
-		if(mainUI.inputHandler.selector) {
-			gc2.setFill(selected.brighter());
-			gc2.setStroke(selected.darker().darker());
-			int drawX = (int) mainUI.inputHandler.selectorX, drawY = (int) mainUI.inputHandler.selectorY, drawWidth = (int) mainUI.inputHandler.selectorWidth, drawHeight = (int) mainUI.inputHandler.selectorHeight;
-			gc2.fillRect(drawX + mainUI.inputHandler.offsetX, drawY + mainUI.inputHandler.offsetY, drawWidth, drawHeight);
-			gc2.strokeRect(drawX + mainUI.inputHandler.offsetX, drawY + mainUI.inputHandler.offsetY, drawWidth, drawHeight);
-			gc2.setStroke(Color.BLACK);
-		}
-	}
-	
-	public void drawBackground() {
-		final GraphicsContext gc1 = background.getGraphicsContext2D();
-		gc1.clearRect(0, 0, background.getWidth(), background.getHeight());
-		 
-		gc1.setFill(Color.BLACK);
-		gc1.setLineWidth(0.075);
-		gc1.strokeRect(0, 0, background.getWidth(), background.getHeight());
+		Location start = new Location(0, 0 - extLength);
+		Location end = new Location(0, 3);
 		
-		double x = 0, y = 0;
-		if(mainUI.inputHandler.offsetX % 25 != 0) x = mainUI.inputHandler.offsetX % 25 - 25;
-		if(mainUI.inputHandler.offsetY % 25 != 0) y = mainUI.inputHandler.offsetY % 25 - 25;
-		for(int i = 0; i < (background.getWidth() / 25) ;i++) {
-			gc1.strokeLine(i * 25 + x, y, i * 25 + x, background.getHeight() + y);
+		extLine = new Line(start.getIntX(), start.getIntY(), end.getIntX(), end.getIntY());
+		extLine.setStyle("-fx-stroke-type: outside; -fx-stroke-width: 1");
+		
+		Location start2 = new Location(0,-3 +c.bounds.getIntHeight());
+		Location end2 = new Location(0,-3 +c.bounds.getIntHeight() + extLength);
+		
+		extLine2 = new Line(start2.getIntX(), start2.getIntY(), end2.getIntX(), end2.getIntY());
+		extLine2.setStyle("-fx-stroke-type: outside; -fx-stroke-width: 1;");
+		
+		res.getChildren().setAll(extLine, extLine2);
+		return res;
+	}
+    
+    private ComponentGroup createComponent(BasicComponent c) {
+    	ComponentGroup compGroup = new ComponentGroup(c);
+		CustomGroup compBaseGroup = new CustomGroup();
+		
+		Rectangle hitbox = new Rectangle(0, 0, c.bounds.getIntWidth(), c.bounds.getIntHeight());
+		
+		hitbox.setFill(Color.TRANSPARENT);
+		if(config.isTrue("SHOWHITBOX")) {
+			hitbox.setStroke(Color.GREEN);
+			
 		}
-		for(int i = 0; i < (background.getHeight() / 25) ;i++) {
-			gc1.strokeLine(x, i * 25 + y, background.getWidth() + x, i * 25 + y);
+		
+		compBaseGroup.getChildren().setAll(c.getRenderparts(), hitbox);
+		compBaseGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED, this.nodeHandler.onMouseDraggedDraggable);
+		compBaseGroup.addEventFilter(MouseEvent.MOUSE_PRESSED, this.nodeHandler.onMousePressedNode);
+		compBaseGroup.setOnDragDetected(this.nodeHandler.onMouseStartedDraggingDraggable);
+		
+		compGroup.getChildren().setAll(compBaseGroup, createConnectors(c), getExtensionLine(c));
+		compGroup.setTranslateX(c.location.getIntX());
+		compGroup.setTranslateY(c.location.getIntY());
+		compGroup.setRotate(c.basicAttributes.getIntOrientation() * 90);
+		compGroup.toFront();
+		
+		compGroup.addEventFilter(MouseEvent.MOUSE_CLICKED, this.nodeHandler.onMouseClickedNode);       	
+		compGroup.addEventFilter(MouseEvent.MOUSE_ENTERED, this.nodeHandler.onMouseHoveredNode);
+		compGroup.addEventFilter(MouseEvent.MOUSE_EXITED, this.nodeHandler.onMouseExitedNode);
+		compGroup.addEventFilter(MouseEvent.MOUSE_PRESSED, this.nodeHandler.onMousePressedNode);
+		compGroup.addEventFilter(MouseEvent.MOUSE_RELEASED, this.nodeHandler.onMouseReleasedNode);
+		
+		c.setNode(compGroup);
+		return compGroup;
+    	
+    }
+	
+	private Group createConnectors (BasicComponent c) {
+		Group cons = new Group();
+		int conY =(c.bounds.getIntHeight() / 2);
+		
+		for (int i=0; i<c.inputs.size(); i++) {	
+			Connector con = c.inputs.get(i);
+			int j=0;
+			
+			if((c.inputs.size() % 2)==0)
+				j=1;
+
+			if(i%2==0) {
+				conY += (con.bounds.getIntHeight()*2)*(i + j); 
+				 
+			} else {
+				conY -= (con.bounds.getIntHeight()*2)*(i + j);
+				
+			}
+			
+			if(con.isNegated.getValue()){
+				ConnectorCircle conNode;
+				conNode = new ConnectorCircle(-con.bounds.getIntWidth(),conY, con.bounds.getIntWidth()-1, con);
+				
+				conNode.setStyle("-fx-stroke-type: outside;"
+						+ " -fx-stroke-width: 2;"
+						+ " -fx-stroke: black;"
+						+ " -fx-fill: transparent;");
+				
+				conNode.addEventFilter(MouseEvent.MOUSE_DRAGGED, this.nodeHandler.onMouseDraggedConnector);
+
+				con.location.x.setValue(c.location.getIntX()-con.bounds.getIntWidth());
+				con.location.y.setValue(c.location.getIntY()-conY);
+				con.setNode(conNode);
+				cons.getChildren().add(conNode);
+				
+			} else {
+				ConnectorLine conNode;
+				
+				conNode = new ConnectorLine(-con.bounds.getIntWidth(), conY, con.bounds.getIntWidth()/2 -4, conY, con);
+				conNode.setStyle("-fx-stroke-type: outside; "
+						+ "-fx-stroke-width: 2; "
+						+ "-fx-stroke-line-cap: ROUND");
+				
+				conNode.addEventFilter(MouseEvent.MOUSE_DRAGGED, this.nodeHandler.onMouseDraggedConnector);
+
+				con.location.x.setValue(c.location.getIntX()-con.bounds.getIntWidth());
+				con.location.y.setValue(c.location.getIntY()-conY);
+				
+				con.setNode(conNode);
+				cons.getChildren().add(conNode);
+			}
 		}
+		Connector cOut = c.outputs.get(0);
+		
+		if(cOut.isNegated.getValue()){
+			ConnectorCircle conNode;
+			conNode = new ConnectorCircle(c.bounds.getIntWidth() + cOut.bounds.getIntWidth()/2,c.bounds.getIntHeight() / 2, cOut.bounds.getIntWidth()-2, cOut);
+			
+			conNode.setStyle("-fx-stroke-type: outside;"
+					+ " -fx-stroke-width: 2;"
+					+ " -fx-stroke: black;"
+					+ " -fx-fill: transparent;");
+			
+			conNode.addEventFilter(MouseEvent.MOUSE_DRAGGED, this.nodeHandler.onMouseDraggedConnector);
+
+			cOut.location.x.setValue(c.location.getIntX()+ c.bounds.getIntWidth() + cOut.bounds.getIntWidth()/2);
+			cOut.location.y.setValue(c.location.getIntY()+ c.bounds.getIntHeight() / 2);
+			cOut.setNode(conNode);
+			cons.getChildren().add(conNode);
+			
+		} else {
+			ConnectorLine conNode;
+			
+			conNode = new ConnectorLine(c.bounds.getIntWidth(), c.bounds.getIntHeight()/2, c.bounds.getIntWidth() + cOut.bounds.getIntWidth(), c.bounds.getIntHeight()/2, cOut);
+			conNode.setStyle("-fx-stroke-type: outside; "
+					+ "-fx-stroke-width: 2; "
+					+ "-fx-stroke-line-cap: ROUND");
+			
+			conNode.addEventFilter(MouseEvent.MOUSE_DRAGGED, this.nodeHandler.onMouseDraggedConnector);
+			
+			cOut.location.x.setValue(c.location.getIntX()+ c.bounds.getIntWidth() + cOut.bounds.getIntWidth()/2);
+			cOut.location.y.setValue(c.location.getIntY()+ c.bounds.getIntHeight() / 2);
+			cOut.setNode(conNode);
+			cons.getChildren().add(conNode);
+		}
+		
+		return cons;
 	}
 	
-    private void rotate(GraphicsContext gc, double angle, double px, double py) {
-        Rotate r = new Rotate(angle, px, py);
-        gc.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
+	public void rerenderComp(Component c){		
+		this.removeNode(c.getNode());
+		this.addComponent(c);
+		this.repaint();
+		
+	}
+	
+    private WireLine createWire(Wire wire){
+		WireLine lineWire = new WireLine();	
+			
+		lineWire = new WireLine(wire.getStart().getIntX(), wire.getStart().getIntY(), wire.getEnd().getIntX(), wire.getEnd().getIntY());
+		lineWire.setStyle("-fx-stroke-type: outside; -fx-stroke-width: 1; -fx-stroke-line-cap: ROUND");
+		lineWire.setStroke(wire.getColor());
+
+		return lineWire;
+    }
+    
+    public void addComponent(Component comp) {
+    	if(comp instanceof BasicComponent) {
+    		BasicComponent c = (BasicComponent) comp;
+    		Group node = createComponent(c);
+    		comp.setNode(node);
+    		this.canvas.getChildren().add(node);
+    		this.compCount++;
+    		
+    	} else if(comp instanceof Wire) {
+    		Wire w = (Wire) comp;
+    		WireLine wire = createWire(w);
+    		comp.setNode(wire);
+    		this.canvas.getChildren().add(wire);
+    		this.wiresCount++;
+    	}
+    	
+    	this.repaint();
+    }
+    
+    public void removeNode(Node n) {
+    	this.canvas.getChildren().remove(n);
+    	
     }
 
-    private void drawRotatedImage(GraphicsContext gc, Image image, double angle, double tlpx, double tlpy) {
-        gc.save(); // saves the current state on stack, including the current transform
-        rotate(gc, angle, tlpx + image.getWidth() / 2, tlpy + image.getHeight() / 2);
-        gc.drawImage(image, tlpx, tlpy);
-        gc.restore(); // back to original state (before rotation)
+    private void addSceneHandlers(){    	
+    	this.canvas.getParent().setOnMousePressed(this.inputHandler.onMousePressedEventHandler);
+    	this.canvas.getParent().setOnMouseDragged(this.inputHandler.onMouseDraggedEventHandler);
+    	this.canvas.getParent().setOnMouseReleased(this.inputHandler.onMouseReleasedEventHandler);
+    	this.canvas.getParent().setOnScroll(this.inputHandler.onScrollEventHandler);
+ 	
     }
-	
+    
 }

@@ -2,7 +2,6 @@ package at.fishkog.als.ui.common.sidebar;
 
 import at.fishkog.als.sim.component.Component;
 import javafx.scene.control.TreeCell;
-import javafx.scene.image.ImageView;
 
 public class SidebarTreeCell<T> extends TreeCell<T> {
 
@@ -18,12 +17,14 @@ public class SidebarTreeCell<T> extends TreeCell<T> {
         if(!empty) {
         	if(item instanceof Component) {
         		Component comp = (Component) item;
-        		ImageView icon = new ImageView(comp.renderContext.getImage());
-        		icon.setPreserveRatio(true);
-        		icon.setFitWidth(20);
-        		icon.setFitHeight(15);
         		
-        		this.setGraphic(icon);
+        		javafx.scene.Group graphic = comp.getRenderparts();
+        		if(graphic != null) {
+        			graphic.setScaleX(0.5);
+        			graphic.setScaleY(0.5);
+        		}
+        		this.setGraphic(graphic);
+        		
         	}
             setText(" " + item.toString());
         } else {

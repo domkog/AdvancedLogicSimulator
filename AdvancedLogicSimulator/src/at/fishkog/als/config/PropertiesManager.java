@@ -97,6 +97,11 @@ public class PropertiesManager {
 		
 	}
 	
+	public boolean isTrue(String key) {
+		return (this.get(key).equalsIgnoreCase("TRUE"));
+		
+	}
+	
 	/** Sets the value for the Entry with the given key
 	 * @param key The key of the entry wanted to set
 	 * @param value value wanted to set for the entry, casted to a String

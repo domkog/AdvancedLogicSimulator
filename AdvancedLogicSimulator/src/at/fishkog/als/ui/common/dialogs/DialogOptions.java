@@ -110,9 +110,6 @@ public class DialogOptions {
 	    	langCodes[i] = availiableLocales[i].toString();
 	    	obsLangCodes.add(availiableLocales[i].getDisplayName(availiableLocales[i]));
 	    	
-	    	/*TODO
-	    	if(l.equals(availiableLocales[i]))
-	    	*/
 	    	if(availiableLocales[i].getCountry().equals(l.getCountry()) && availiableLocales[i].getLanguage().equals(l.getLanguage())) {
 	    			selectedLang = i;
 	    	
@@ -176,15 +173,7 @@ public class DialogOptions {
 	    tabLay.setContent(gridLay);
 
 	    gRow = -1;
-	    
-	    Button btnThemes = new Button(l.getString("ThemeManager"));
-	    btnThemes.setOnAction((e) -> { 
-	    	new DialogThemesManager().show();
-	    	
-        });      
-	    
-	    gridLay.add(btnThemes, 0, ++gRow);
-	    
+    
 	    
 	    //===========
 	    
@@ -434,6 +423,7 @@ public class DialogOptions {
         });
 	    
 	    gridDev.add(btnAppClear, 1, gRow);
+
 	    //===========
 	    
 	    

@@ -3,18 +3,22 @@ package at.fishkog.als.sim.component.placeable.wire;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import at.fishkog.als.sim.component.Component;
 import at.fishkog.als.sim.component.Processable;
+import at.fishkog.als.sim.component.categories.Categories;
+import at.fishkog.als.sim.component.placeable.logic.ANDComponent;
+import at.fishkog.als.sim.data.BitWidth;
 import at.fishkog.als.sim.data.Connector;
-import at.fishkog.als.sim.data.Data;
+import at.fishkog.als.sim.data.Connector.Type;
 import at.fishkog.als.sim.data.Location;
+import at.fishkog.als.sim.data.State;
 import at.fishkog.als.sim.data.meta.MetaValue;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 
-public class Wire extends Data implements Processable {	
-	public Connector cOut;
-	public ArrayList<Connector> cIns;
-	
-	private final MetaValue<Data.State> state;
+public class Wire extends Component implements Processable {	
+
 	private final MetaValue<Integer> length;
 	private final MetaValue<Boolean> isHorizontal;
 	
@@ -23,9 +27,15 @@ public class Wire extends Data implements Processable {
 	
 	public boolean isMultiBit;
 	
-	public Wire(Connector cOut, int leangth, boolean isHorizontal) {
+	private Connector cOut;
+	
+	public Wire(int id, Connector cOut, int leangth, boolean isHorizontal) {
+		super(id, Categories.WIRES, l.getString("Wire"));
 		this.start = cOut.location;
 		this.isHorizontal = new MetaValue<Boolean>("isHorizontal", isHorizontal);
+		
+		this.cOut = cOut;
+		this.outputs.add(cOut);
 		
 		if(isHorizontal) {
 			this.end = new Location(cOut.location.getIntX() + leangth, cOut.location.getIntY());
@@ -36,8 +46,24 @@ public class Wire extends Data implements Processable {
 		}
 		
 		this.length = new MetaValue<Integer>("length", Math.abs(this.end.getIntX() - this.start.getIntX()) + Math.abs(this.start.getIntY() - this.end.getIntX()));
-		this.state = new MetaValue<Data.State>("state", State.UNKNOWN);
+		this.state = new MetaValue<State>("state", State.UNKNOWN);
 		
+		this.metaData.add(this.start.getMetaData(), this.end.getMetaData());
+		if(bitwidth != null) {
+			for(int i=0; i<this.bitwidth.getWidth(); i++) {
+				this.metaData.add(cOut.states.get(i));
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * THIS IS ONLY FOR REGISTRATION PURPOSE, NEVER USE THIS!
+	 * 
+	 */
+	public Wire() {
+		this(0,new Connector(new ANDComponent(0, 0, 0, 0),"",Type.INPUT,0,0,new BitWidth(),false),0, false);
+
 	}
 	
 	public void setOutput(Connector c) {
@@ -46,7 +72,7 @@ public class Wire extends Data implements Processable {
 	}
 	
 	public void addInput(Connector c) {
-		cIns.add(c);
+		inputs.add(c);
 		
 	}
 
@@ -57,14 +83,14 @@ public class Wire extends Data implements Processable {
 	}
 	
 	public void removeInput(Connector c) {
-		if(cIns.contains(c)) {
-			cIns.remove(c);
+		if(inputs.contains(c)) {
+			inputs.remove(c);
 			
 		}
 	}
 	
 	public Connector getInputs(String id) {
-		ArrayList<Connector> result = cIns.stream().filter((Connector c) -> c.id.value.equalsIgnoreCase(id)).collect(Collectors.toCollection(ArrayList::new));
+		ArrayList<Connector> result = inputs.stream().filter((Connector c) -> c.id.getValue().equalsIgnoreCase(id)).collect(Collectors.toCollection(ArrayList::new));
 		if(result.isEmpty()) return null;
 		else return result.get(0);
 		
@@ -105,7 +131,7 @@ public class Wire extends Data implements Processable {
 		
 	}
 	
-	//TODO
+	//TODO return if it overlaps with another wire
 	private boolean overlaps(Location loc1, Location loc2) {
 		return true;
 		
@@ -117,7 +143,6 @@ public class Wire extends Data implements Processable {
 		
 	}
 	
-	//TODO Do all the update shit here
 	public void update() {
 		
 		
@@ -130,15 +155,15 @@ public class Wire extends Data implements Processable {
 	
 	@Override
 	public void process() {
-		for(Connector cIn : cIns) {
+		for(Connector cIn : inputs) {
 			for(int i=0; i<this.bitwidth.getWidth(); i++) {
-				cIn.states.get(i).setValue(cOut.states.get(i).value);
+				cIn.states.get(i).setValue(cOut.states.get(i).getValue());
 			}
 		}
 		if(this.bitwidth.getWidth() == 1){
-			this.state.setValue(cOut.states.get(0).value);
+			this.state.setValue(cOut.states.get(0).getValue());
 		} else {
-			this.state.setValue(Data.State.INVISIBLE);
+			this.state.setValue(State.INVISIBLE);
 		}
 	}
 	
@@ -153,21 +178,19 @@ public class Wire extends Data implements Processable {
 			
 		}
 	}
-	
-	@Override
-	public ArrayList<MetaValue<?>> getMetaValues() {
-		ArrayList<MetaValue<?>> result = new ArrayList<MetaValue<?>>();
-		result.add(start.x);
-		result.add(start.y);
-		result.add(end.x);
-		result.add(end.y);
-		
-		for(int i=0; i<this.bitwidth.getWidth(); i++) {
-			result.add(cOut.states.get(i));
-			
-		}
 
-		return result;
+	public Node getNode() {
+		return node;
+	}
+
+	public void setNode(Node node) {
+		this.node = node;
+	}
+
+	@Override
+	public Group getRenderparts() {
+		return null;
+		
 	}
 
 }

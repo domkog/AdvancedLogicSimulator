@@ -1,15 +1,19 @@
-package at.fishkog.als.ui.common.renderer;
+package at.fishkog.als.ui.common;
 
+import at.fishkog.als.ui.customNodes.Rubberband;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.StrokeLineCap;
 
 public class PannableCanvas extends Pane {
 
-	DoubleProperty myScale = new SimpleDoubleProperty(1.0);
-	public Canvas canvasComp;
-    
+	public DoubleProperty myScale = new SimpleDoubleProperty(1.0);
+	  	
+  	public SelectionModel selectModel = new SelectionModel();
+  	public Rubberband rubberband;
+	
     public PannableCanvas(int w, int h) {
         setPrefSize(w, h);
         
@@ -17,7 +21,12 @@ public class PannableCanvas extends Pane {
         scaleXProperty().bind(myScale);
         scaleYProperty().bind(myScale);
         
-        this.canvasComp = new Canvas(w,h);
+        this.rubberband = new Rubberband(0,0,0,0);
+		
+        this.rubberband.setStroke(Color.LIGHTBLUE.darker());
+        this.rubberband.setStrokeWidth(1);
+        this.rubberband.setStrokeLineCap(StrokeLineCap.ROUND);
+        this.rubberband.setFill(Color.LIGHTBLUE.deriveColor(0, 1.2, 1, 0.6));
         
     }
 

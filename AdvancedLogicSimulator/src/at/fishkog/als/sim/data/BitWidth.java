@@ -2,7 +2,7 @@ package at.fishkog.als.sim.data;
 
 import at.fishkog.als.AdvancedLogicSimulator;
 
-public class BitWidth {
+public class BitWidth extends Data{
 	
 	public static final BitWidth UNKNOWN = new BitWidth(0);
 	public static final BitWidth ONE = new BitWidth(1);
