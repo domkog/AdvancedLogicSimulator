@@ -31,7 +31,8 @@ public class MainUI extends UI {
 	public VBox root;
 	public Scene scene;
 	
-	public Canvas canvasBackground, canvasObjects;
+	public Canvas canvasBackground;
+	public PannableCanvas canvasComponents;
 	public SceneInputHandler inputHandler;
 	
 	public ToolBar footer;
@@ -92,23 +93,25 @@ public class MainUI extends UI {
         root.getChildren().add(header);
         
 		HBox hWrapper = new HBox(1);
-		Sidebar sidePanel = new Sidebar();
-		sidePanel.prefHeightProperty().bind(root.heightProperty());
+		
 		VBox whiteboard = new VBox();
 		whiteboard.setPrefHeight(900);
 		whiteboard.setPrefWidth(1300);
 				
 		// create canvas
-		PannableCanvas canvasComponents = new PannableCanvas(1000, 1000);		 		
+		this.canvasComponents = new PannableCanvas(1000, 1000);		 		
 		Canvas canvasGrid = new Canvas(500,500);
 		
-		hWrapper.getChildren().add(sidePanel);
 		TabPane tabPane = new TabPane();
 		Tab main = new Tab();
 		main.setText("Main");
 		
 		Pane canvasPane = new Pane(canvasComponents, canvasGrid);
 		canvasPane.setId("Comp-Grid");
+		
+		Sidebar sidePanel = new Sidebar();
+		sidePanel.prefHeightProperty().bind(root.heightProperty());
+		hWrapper.getChildren().add(sidePanel);
 		
 		tabPane.prefHeightProperty().addListener((arg0, from, to) -> {
         	canvasGrid.setHeight(to.doubleValue());

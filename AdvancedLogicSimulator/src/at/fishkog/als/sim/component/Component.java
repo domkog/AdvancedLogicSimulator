@@ -126,12 +126,11 @@ public abstract class Component extends Data{
 		return this.node;
 		
 	}
-	
+		
 	@Override
 	public String toString() {
 		return this.basicAttributes.getStringName();
 	}
 	
-	public abstract Group getRenderparts();
-
+	public abstract Group getRenderparts();	
 }

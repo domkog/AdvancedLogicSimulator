@@ -165,7 +165,10 @@ public class NodeInputHandler {
 	            if(event.getSource() instanceof ConnectorLine || event.getSource() instanceof ConnectorCircle) {
 	            	Connector con = null;
 	            	int leangthX = (int) (event.getX() - wireDragContext.mouseAnchorX);
-	            	//int leangthY = (int) (event.getY() - wireDragContext.mouseAnchorY);
+	            	leangthX = Math.round(leangthX/10) * 10;
+	            	
+	            	int leangthY = (int) (event.getY() - wireDragContext.mouseAnchorY);
+	            	leangthY = Math.round(leangthY/10) * 10;
 	            	
 	            	if(event.getSource() instanceof ConnectorLine) {
 	            		con = ((ConnectorLine) event.getSource()).getCon();
@@ -173,7 +176,8 @@ public class NodeInputHandler {
 	            	} else if(event.getSource() instanceof ConnectorCircle)
 	            		con = ((ConnectorCircle) event.getSource()).getCon();
 	            	
-	            	Wire w = new Wire(AdvancedLogicSimulator.renderer.wiresCount + 1,con, leangthX, true);
+	            	
+	            	Wire w = new Wire(AdvancedLogicSimulator.renderer.wiresCount + 1,con, (Math.abs(leangthX) > Math.abs(leangthY)) ? leangthX : leangthY, Math.abs(leangthX) > Math.abs(leangthY));
 	            	AdvancedLogicSimulator.logicCanvas.add(w);
 	            	
 	            }
@@ -213,8 +217,11 @@ public class NodeInputHandler {
 								Component l_comp = ((ComponentGroup) sn).getComp();
 								
 								if(l_comp instanceof BasicComponent) {
-									((BasicComponent)l_comp).location.x.setValue((int) (((BasicComponent)l_comp).location.x.getValue() + event.getX()));
-									((BasicComponent)l_comp).location.y.setValue((int) (((BasicComponent)l_comp).location.y.getValue() + event.getY()));
+									int newX = (int) (((BasicComponent)l_comp).location.x.getValue() + event.getX());
+									int newY = (int) (((BasicComponent)l_comp).location.y.getValue() + event.getY());
+									
+									((BasicComponent)l_comp).location.x.setValue(Math.round(newX/10) * 10);
+									((BasicComponent)l_comp).location.y.setValue(Math.round(newY/10) * 10);
 									
 								} else {
 									
@@ -224,8 +231,11 @@ public class NodeInputHandler {
 					} else {
 
 						if(compNode.getComp() instanceof BasicComponent) {
-							((BasicComponent)compNode.getComp()).location.x.setValue((int) (((BasicComponent)compNode.getComp()).location.x.getValue() + event.getX()));
-							((BasicComponent)compNode.getComp()).location.y.setValue((int) (((BasicComponent)compNode.getComp()).location.y.getValue() + event.getY()));
+							int newX = (int) (((BasicComponent)compNode.getComp()).location.x.getValue() + event.getX());
+							int newY = (int) (((BasicComponent)compNode.getComp()).location.y.getValue() + event.getY());
+									
+							((BasicComponent)compNode.getComp()).location.x.setValue(Math.round(newX/10) * 10);
+							((BasicComponent)compNode.getComp()).location.y.setValue(Math.round(newY/10) * 10);
 						
 						} else {
 							

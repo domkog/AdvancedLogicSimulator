@@ -111,4 +111,6 @@ public abstract class BasicComponent extends Component {
 		
 		
 	}
+	
+	public abstract BasicComponent createNew(int x, int y, int numInputs, int bitwidth);
 }

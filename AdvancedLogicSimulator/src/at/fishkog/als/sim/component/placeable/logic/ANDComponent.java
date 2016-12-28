@@ -66,4 +66,10 @@ public class ANDComponent extends BasicComponent implements Processable {
 		res.getChildren().setAll(base,arc);
 		return res;
 	}
+
+	@Override
+	public BasicComponent createNew(int x, int y, int numInputs, int bitwidth) {
+		return new ANDComponent(x,y,numInputs,bitwidth);
+		
+	}
 }

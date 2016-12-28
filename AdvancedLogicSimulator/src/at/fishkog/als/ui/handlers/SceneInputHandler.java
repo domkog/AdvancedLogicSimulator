@@ -79,6 +79,7 @@ public class SceneInputHandler {
         }
     };
     
+    //TODO Rubberband after canvas translate
     public EventHandler<MouseEvent> onMouseDraggedEventHandler = new EventHandler<MouseEvent>() {
         public void handle(MouseEvent event) {       	
 	        if(event.isSecondaryButtonDown()) {

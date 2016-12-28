@@ -52,6 +52,8 @@ public class Connector extends Data {
 		
 		this.isNegated = new MetaValue<Boolean>("isNegated(" + id + ")", isNegated);
 		
+		this.isNegated = new MetaValue<Boolean>("isNegated(" + id + ")", isNegated);
+		
 		location.x.access = MetaAccess.HIDDEN;
 		location.y.access = MetaAccess.HIDDEN;
 		bounds.width.access = MetaAccess.HIDDEN;

@@ -47,5 +47,9 @@ public class NOTComponent extends BasicComponent implements Processable {
 		res.getChildren().setAll(base);
 		return res;
 	}
-
+	@Override
+	public BasicComponent createNew(int x, int y, int numInputs, int bitwidth) {
+		return new NOTComponent(x,y,numInputs,bitwidth);
+		
+	}
 }

@@ -49,5 +49,10 @@ public class NANDComponent extends BasicComponent implements Processable {
 		res.getChildren().setAll(base,arc);
 		return res;
 	}
-
+	@Override
+	public BasicComponent createNew(int x, int y, int numInputs, int bitwidth) {
+		return new NANDComponent(x,y,numInputs,bitwidth);
+		
+	}
+	
 }

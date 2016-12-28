@@ -50,7 +50,7 @@ public class ComponentRenderer {
 
 		this.config = AdvancedLogicSimulator.config;
 		
-		for(Component d: AdvancedLogicSimulator.logicCanvas.components) {
+		for(Component d: AdvancedLogicSimulator.logicCanvas.getComponents()) {
 			if (d instanceof Wire){
 				Wire wire = (Wire) d;
 				WireLine t_w = createWire(wire);

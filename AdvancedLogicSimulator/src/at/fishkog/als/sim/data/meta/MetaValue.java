@@ -146,4 +146,10 @@ public class MetaValue<T> implements Cloneable {
 		return meta;
 	}
 	
+	@Override
+	public String toString() {
+		return this.getValue().toString();
+		
+	}
+	
 }

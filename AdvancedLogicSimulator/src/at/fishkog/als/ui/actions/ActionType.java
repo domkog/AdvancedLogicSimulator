@@ -20,18 +20,18 @@ public enum ActionType {
 		if(this == ActionType.CREATE) {
 			if(action.data instanceof Component) {
 				Component comp = (Component) action.data;
-				AdvancedLogicSimulator.logicCanvas.components.remove(comp);
+				AdvancedLogicSimulator.logicCanvas.removeSilent(comp);
 				AdvancedLogicSimulator.renderer.removeNode(comp.getNode());
 			} else if(action.data instanceof Wire) {
 				Wire comp = (Wire) action.data;
-				AdvancedLogicSimulator.logicCanvas.components.remove(comp);
+				AdvancedLogicSimulator.logicCanvas.removeSilent(comp);
 				AdvancedLogicSimulator.renderer.removeNode(comp.getNode());
 			}
 		} else if(this == DELETE) {
 			if(action.data instanceof Component) {
 				Component comp = (Component) action.data;
 				resetMeta(action);
-				AdvancedLogicSimulator.logicCanvas.components.add(comp);
+				AdvancedLogicSimulator.logicCanvas.addSilent(comp);
 				AdvancedLogicSimulator.renderer.addComponent(comp);
 			}
 		} else if(this == ActionType.ADD_CONNECTOR || this == ActionType.REMOVE_CONNECTOR) {

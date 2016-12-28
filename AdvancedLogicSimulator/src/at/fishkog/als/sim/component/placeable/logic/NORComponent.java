@@ -39,5 +39,9 @@ public class NORComponent extends BasicComponent implements Processable {
 		res.getChildren().setAll(arcBase, arcSide1, arcSide2);
 		return res;
 	}
-
+	@Override
+	public BasicComponent createNew(int x, int y, int numInputs, int bitwidth) {
+		return new NORComponent(x,y,numInputs,bitwidth);
+		
+	}
 }

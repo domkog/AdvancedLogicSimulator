@@ -62,5 +62,9 @@ public class XNORComponent extends BasicComponent implements Processable {
 		res.getChildren().setAll(arcBase, arcBase2, arcSide1, arcSide2);
 		return res;
 	}
-
+	@Override
+	public BasicComponent createNew(int x, int y, int numInputs, int bitwidth) {
+		return new XNORComponent(x,y,numInputs,bitwidth);
+		
+	}
 }
